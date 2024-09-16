@@ -7,11 +7,11 @@ export function Input({ ...rest }: Props) {
   return (
     <GluestackInput
       bg="$white"
-      rounded="$lg"
+      rounded="$md"
       borderWidth={0}
       mt="$4"
       w="$full"
-      h="$11"
+      h="$12"
     >
       <InputField
         fontFamily="$body"
