@@ -3,6 +3,7 @@ import { Center, HStack, Image, Text, VStack } from "@gluestack-ui/themed";
 import Logo from "@assets/logo.png";
 import { Highlight } from "@components/Highlight";
 import { Input } from "@components/Input";
+import { Button } from "@components/Button";
 
 export function SignIn() {
   return (
@@ -16,6 +17,7 @@ export function SignIn() {
       <HStack>
         <Input placeholder="Senha" />
       </HStack>
+      <Button title="Entrar" />
     </Center>
   );
 }
