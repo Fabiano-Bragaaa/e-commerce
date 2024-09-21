@@ -1,5 +1,11 @@
-import { Input as GluestackInput, InputField } from "@gluestack-ui/themed";
+import {
+  Input as GluestackInput,
+  Icon,
+  InputField,
+} from "@gluestack-ui/themed";
+import { Eye } from "phosphor-react-native";
 import { ComponentProps } from "react";
+import { TouchableOpacity } from "react-native";
 
 type Props = ComponentProps<typeof InputField>;
 

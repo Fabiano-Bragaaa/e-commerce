@@ -5,16 +5,17 @@ import {
   Karla_400Regular,
   Karla_700Bold,
 } from "@expo-google-fonts/karla";
-import { Center, GluestackUIProvider, Text } from "@gluestack-ui/themed";
+import { GluestackUIProvider } from "@gluestack-ui/themed";
 import { config } from "./config/gluestack-ui.config";
 import { SignIn } from "@screens/SignIn";
+import { SignUp } from "@screens/SignUp";
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Karla_400Regular, Karla_700Bold });
 
   return (
     <GluestackUIProvider config={config}>
-      {fontsLoaded ? <SignIn /> : <View />}
+      {fontsLoaded ? <SignUp /> : <View />}
     </GluestackUIProvider>
   );
 }

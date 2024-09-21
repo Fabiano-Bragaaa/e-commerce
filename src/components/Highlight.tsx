@@ -11,7 +11,12 @@ export function Highlight({ title, subtitle }: Props) {
       <Text fontFamily="$heading" fontSize="$4xl" color="$gray50">
         {title}
       </Text>
-      <Text fontFamily="$body" color="$gray200" fontSize="$lg">
+      <Text
+        fontFamily="$body"
+        color="$gray200"
+        fontSize="$lg"
+        textAlign="center"
+      >
         {subtitle}
       </Text>
     </Center>
