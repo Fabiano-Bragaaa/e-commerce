@@ -5,7 +5,6 @@ import Logo from "@assets/logo.png";
 import { Highlight } from "@components/Highlight";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
-import { Eye } from "phosphor-react-native";
 
 export function SignIn() {
   return (
@@ -16,7 +15,9 @@ export function SignIn() {
         Acesse sua conta
       </Text>
       <Input placeholder="E-mail" />
-      <Input placeholder="Senha" />
+      <HStack>
+        <Input placeholder="Senha" />
+      </HStack>
       <Button title="Entrar" />
 
       <Text mt="$24" color="$gray100" fontSize="$lg" fontFamily="$heading">
