@@ -15,7 +15,7 @@ export default function App() {
 
   return (
     <GluestackUIProvider config={config}>
-      {fontsLoaded ? <SignUp /> : <View />}
+      {fontsLoaded ? <SignIn /> : <View />}
     </GluestackUIProvider>
   );
 }

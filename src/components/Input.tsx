@@ -1,15 +1,19 @@
 import {
+  Center,
   Input as GluestackInput,
   Icon,
   InputField,
 } from "@gluestack-ui/themed";
-import { Eye } from "phosphor-react-native";
-import { ComponentProps } from "react";
+import { Eye, EyeOff } from "lucide-react-native";
+import { ComponentProps, useState } from "react";
 import { TouchableOpacity } from "react-native";
 
-type Props = ComponentProps<typeof InputField>;
+type Props = ComponentProps<typeof InputField> & {
+  securityType?: boolean;
+};
 
-export function Input({ ...rest }: Props) {
+export function Input({ securityType = false, ...rest }: Props) {
+  const [security, setSecurity] = useState(false);
   return (
     <GluestackInput
       bg="$white"
@@ -24,8 +28,20 @@ export function Input({ ...rest }: Props) {
         fontSize="$lg"
         color="$gray300"
         placeholderTextColor="$gray300"
+        secureTextEntry={security}
         {...rest}
       />
+      {securityType && (
+        <Center mr="$4">
+          <TouchableOpacity onPress={() => setSecurity(!security)}>
+            {security ? (
+              <Icon as={EyeOff} color="$black" size="lg" />
+            ) : (
+              <Icon as={Eye} color="$black" size="lg" />
+            )}
+          </TouchableOpacity>
+        </Center>
+      )}
     </GluestackInput>
   );
 }
