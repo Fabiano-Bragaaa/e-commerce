@@ -1,4 +1,4 @@
-import { Center, HStack, Icon, Image, Text } from "@gluestack-ui/themed";
+import { Box, Center, HStack, Icon, Image, Text } from "@gluestack-ui/themed";
 
 import Logo from "@assets/logo.png";
 import Avatar from "@assets/Avatar.png";
@@ -8,7 +8,10 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { UserPhoto } from "@components/UserPhoto";
 import { ScrollView } from "react-native";
-import { PencilSimpleLine } from "phosphor-react-native";
+
+import { PencilLine } from "lucide-react-native";
+
+import { Feather } from "@expo/vector-icons";
 
 export function SignUp() {
   return (
@@ -22,18 +25,26 @@ export function SignUp() {
           title="Boas vindas!"
           subtitle="Crie sua conta e use o espaço para comprar itens variados e vender seus produtos"
         />
-        <HStack w="$full">
+        <Center w="$full">
           <UserPhoto source={Avatar} alt="foto de perfil" />
-          <Center h="$20" w="$20" rounded="$full" bg="$blue">
-            <Icon as={PencilSimpleLine} color="$white" size="md" />
+          <Center
+            h="$11"
+            w="$11"
+            rounded="$full"
+            bg="$blue1"
+            position="absolute"
+            right={120}
+            top={50}
+          >
+            <Icon as={PencilLine} color="$white" size="md" />
           </Center>
-        </HStack>
+        </Center>
 
         <Input placeholder="Nome" />
         <Input placeholder="E-mail" />
         <Input placeholder="Telefone" />
-        <Input placeholder="Senha" />
-        <Input placeholder="Confirmar senha" />
+        <Input placeholder="Senha" securityType />
+        <Input placeholder="Confirmar senha" securityType />
         <Button title="Entrar" buttonVariant="secondary" />
 
         <Text mt="$8" color="$gray100" fontSize="$lg" fontFamily="$heading">
