@@ -7,7 +7,11 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { ScrollView } from "react-native";
 
+import { useNavigation } from "@react-navigation/native";
+import { AuthNavigatorRoutesProps } from "@routes/auth";
+
 export function SignIn() {
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
   return (
     <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <Center flex={1} bg="$gray600" p="$8">
@@ -32,6 +36,7 @@ export function SignIn() {
           title="Criar uma conta"
           buttonVariant="basic"
           buttonVariantText="secondary"
+          onPress={() => navigation.navigate("signUp")}
         />
       </Center>
     </ScrollView>

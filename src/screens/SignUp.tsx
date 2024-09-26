@@ -1,4 +1,4 @@
-import { Box, Center, HStack, Icon, Image, Text } from "@gluestack-ui/themed";
+import { Center, Icon, Image, Text } from "@gluestack-ui/themed";
 
 import Logo from "@assets/logo.png";
 import Avatar from "@assets/Avatar.png";
@@ -11,9 +11,10 @@ import { ScrollView } from "react-native";
 
 import { PencilLine } from "lucide-react-native";
 
-import { Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 export function SignUp() {
+  const navigation = useNavigation();
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -54,6 +55,7 @@ export function SignUp() {
           title="Ir para login"
           buttonVariant="basic"
           buttonVariantText="secondary"
+          onPress={() => navigation.goBack()}
         />
       </Center>
     </ScrollView>
