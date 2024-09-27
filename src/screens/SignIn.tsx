@@ -8,7 +8,7 @@ import { Button } from "@components/Button";
 import { ScrollView } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
-import { AuthNavigatorRoutesProps } from "@routes/auth";
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
 export function SignIn() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
