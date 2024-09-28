@@ -8,6 +8,7 @@ import { ComponentProps } from "react";
 type Props = ComponentProps<typeof GluestackButton> & {
   title: string;
   isLoading?: boolean;
+  buttonVariantW?: "primary" | "secondary";
   buttonVariant?: "primary" | "secondary" | "basic";
   buttonVariantText?: "primary" | "secondary";
 };
@@ -15,6 +16,7 @@ type Props = ComponentProps<typeof GluestackButton> & {
 export function Button({
   title,
   isLoading = false,
+  buttonVariantW = "primary",
   buttonVariant = "primary",
   buttonVariantText = "primary",
   ...rest
@@ -29,7 +31,7 @@ export function Button({
           ? "$black"
           : "$gray400"
       }
-      w="$full"
+      w={buttonVariantW === "primary" ? "$full" : "41%"}
       h="$12"
       mt="$4"
       rounded="$md"
@@ -41,6 +43,7 @@ export function Button({
           fontFamily="$heading"
           fontSize="$lg"
           color={buttonVariantText === "primary" ? "$white" : "$black"}
+          textAlign="center"
         >
           {title}
         </Text>
