@@ -68,7 +68,11 @@ export function AppRoutes() {
         component={SignOut}
         options={{
           tabBarIcon: ({ color }) => (
-            <Logout fill={color} width={iconSize} height={iconSize} />
+            <Logout
+              fill={tokens.colors.red}
+              width={iconSize}
+              height={iconSize}
+            />
           ),
         }}
       />
