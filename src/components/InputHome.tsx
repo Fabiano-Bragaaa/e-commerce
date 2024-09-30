@@ -14,9 +14,10 @@ import { Search, SlidersVertical } from "lucide-react-native";
 
 type Props = ComponentProps<typeof InputField> & {
   securityType?: boolean;
+  openModal: () => void;
 };
 
-export function InputHome({ securityType = false, ...rest }: Props) {
+export function InputHome({ openModal, securityType = false, ...rest }: Props) {
   return (
     <GluestackInput
       bg="$white"
@@ -43,7 +44,7 @@ export function InputHome({ securityType = false, ...rest }: Props) {
           |
         </Text>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={openModal}>
           <Icon as={SlidersVertical} color="$black" size="lg" />
         </TouchableOpacity>
       </HStack>
