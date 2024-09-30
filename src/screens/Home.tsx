@@ -1,4 +1,5 @@
 import { HomeHeader } from "@components/HomeHeader";
+import { InputHome } from "@components/InputHome";
 import { MyAdsCard } from "@components/MyAdsCard";
 import { VStack, Text } from "@gluestack-ui/themed";
 
@@ -13,6 +14,7 @@ export function Home() {
       <Text color="$gray200" mt="$10" fontFamily="$body" fontSize="$lg" mb="$4">
         Compre produtos variados
       </Text>
+      <InputHome placeholder="Buscar anúncio" />
     </VStack>
   );
 }
