@@ -1,9 +1,10 @@
-import { Center, Text } from "@gluestack-ui/themed";
+import { HeaderMyAds } from "@components/HeaderMyAds";
+import { Center, Text, VStack } from "@gluestack-ui/themed";
 
 export function MyAds() {
   return (
-    <Center flex={1}>
-      <Text>MyAds</Text>
-    </Center>
+    <VStack flex={1} p="$5">
+      <HeaderMyAds />
+    </VStack>
   );
 }

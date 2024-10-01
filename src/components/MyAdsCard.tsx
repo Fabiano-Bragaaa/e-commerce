@@ -8,8 +8,14 @@ import { TouchableOpacity } from "react-native";
 
 import { ArrowRight } from "lucide-react-native";
 
+import { useNavigation } from "@react-navigation/native";
+import { AppRoutesNavigationProps } from "@routes/app.routes";
+
 export function MyAdsCard() {
   const { tokens } = gluestackUIConfig;
+
+  const navigation = useNavigation<AppRoutesNavigationProps>();
+
   return (
     <HStack
       w="$full"
@@ -28,7 +34,7 @@ export function MyAdsCard() {
           anúncios ativos
         </Text>
       </VStack>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("myAds")}>
         <HStack gap="$4" mr="$4">
           <Text color="$blue" fontFamily="$heading" fontSize="$md">
             Meus anúncios
