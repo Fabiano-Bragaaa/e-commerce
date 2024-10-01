@@ -12,6 +12,7 @@ import { ModalContent } from "@components/ModalContent";
 export function Home() {
   const [ads, setAds] = useState(["1", "2", "3", "4", "5", "6", "7", "8"]);
   const [open, setOpen] = useState(false);
+
   return (
     <VStack flex={1} p="$3">
       <HomeHeader />
