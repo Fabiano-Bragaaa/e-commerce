@@ -17,8 +17,6 @@ import { useState } from "react";
 export function SelectFilter() {
   const [valueSelected, setValueSelected] = useState("todos");
 
-  console.log(valueSelected);
-
   return (
     <Select
       w={"40%"}

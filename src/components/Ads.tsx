@@ -2,7 +2,11 @@ import { Box, Center, HStack, Text, VStack } from "@gluestack-ui/themed";
 import { UserPhoto } from "@components/UserPhoto";
 import { ImageAds } from "@components/ImageAds";
 
-export function Ads() {
+type Props = {
+  showAvatar?: boolean;
+};
+
+export function Ads({ showAvatar = true }: Props) {
   return (
     <VStack w="48%" justifyContent="center" my="$2">
       <Box>
@@ -17,15 +21,23 @@ export function Ads() {
         />
         <HStack position="absolute" alignItems="center" px="$2">
           <Box flex={1}>
-            <UserPhoto
-              source={{ uri: "https://github.com/Fabiano-Bragaaa.png" }}
-              h="$10"
-              w="$10"
-              alt="usuario que postou"
-              type="secondary"
-            />
+            {showAvatar && (
+              <UserPhoto
+                source={{ uri: "https://github.com/Fabiano-Bragaaa.png" }}
+                h="$10"
+                w="$10"
+                alt="usuario que postou"
+                type="secondary"
+              />
+            )}
           </Box>
-          <Center bg="$blue1" h="$7" rounded={30} w={55}>
+          <Center
+            bg="$blue1"
+            h="$7"
+            rounded={30}
+            w={55}
+            mt={showAvatar ? 0 : 9}
+          >
             <Text color="$white" fontFamily="$heading">
               NOVO
             </Text>
