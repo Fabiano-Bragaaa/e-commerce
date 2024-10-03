@@ -10,9 +10,14 @@ import { TouchableOpacity } from "react-native";
 
 type Props = ComponentProps<typeof InputField> & {
   securityType?: boolean;
+  heightType?: "primary" | "secondary";
 };
 
-export function Input({ securityType = false, ...rest }: Props) {
+export function Input({
+  heightType = "primary",
+  securityType = false,
+  ...rest
+}: Props) {
   const [security, setSecurity] = useState(false);
   return (
     <GluestackInput
@@ -21,7 +26,7 @@ export function Input({ securityType = false, ...rest }: Props) {
       borderWidth={0}
       mt="$4"
       w="$full"
-      h="$12"
+      h={heightType === "primary" ? "$12" : "$64"}
     >
       <InputField
         fontFamily="$body"
