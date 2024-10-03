@@ -1,4 +1,4 @@
-import { Center, Heading, Text, VStack } from "@gluestack-ui/themed";
+import { Center, Text } from "@gluestack-ui/themed";
 
 type Props = {
   title: string;

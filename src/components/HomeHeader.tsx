@@ -2,8 +2,12 @@ import { HStack, Text, VStack } from "@gluestack-ui/themed";
 import { UserPhoto } from "@components/UserPhoto";
 
 import { Button } from "@components/Button";
+import { useNavigation } from "@react-navigation/native";
+import { AppRoutesNavigationProps } from "@routes/app.routes";
 
 export function HomeHeader() {
+  const navigation = useNavigation<AppRoutesNavigationProps>();
+
   return (
     <HStack alignItems="center" pt="$10">
       <UserPhoto
@@ -24,6 +28,7 @@ export function HomeHeader() {
         title="Criar anúncio"
         buttonVariantW="secondary"
         buttonVariant="secondary"
+        onPress={() => navigation.navigate("CreateAds")}
       />
     </HStack>
   );

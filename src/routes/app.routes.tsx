@@ -11,6 +11,7 @@ type AppRoutes = {
   home: undefined;
   myAds: undefined;
   signOut: undefined;
+  CreateAds: undefined;
 };
 
 export type AppRoutesNavigationProps = BottomTabNavigationProp<AppRoutes>;
@@ -24,6 +25,7 @@ import Logout from "@assets/logout.svg";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 
 import { Platform } from "react-native";
+import { CreateAds } from "@screens/CreateAds";
 
 export function AppRoutes() {
   const { tokens } = gluestackUIConfig;
@@ -67,7 +69,7 @@ export function AppRoutes() {
         name="signOut"
         component={SignOut}
         options={{
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: () => (
             <Logout
               fill={tokens.colors.red}
               width={iconSize}
@@ -75,6 +77,11 @@ export function AppRoutes() {
             />
           ),
         }}
+      />
+      <Screen
+        name="CreateAds"
+        component={CreateAds}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
     </Navigator>
   );
