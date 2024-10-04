@@ -11,9 +11,13 @@ import { ScrollView } from "react-native";
 import { Button } from "@components/Button";
 import { HStack } from "@gluestack-ui/themed";
 import { ImageAddPhoto } from "@components/ImageAddPhoto";
+import { useNavigation } from "@react-navigation/native";
+import { AppRoutesNavigationProps } from "@routes/app.routes";
 
 export function CreateAds() {
   const [switchValue, setSwitchValue] = useState(false);
+
+  const navigation = useNavigation<AppRoutesNavigationProps>();
 
   return (
     <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
@@ -66,6 +70,7 @@ export function CreateAds() {
             title="Avançar"
             buttonVariant="secondary"
             buttonVariantW="basic"
+            onPress={() => navigation.navigate("previewAds")}
           />
         </HStack>
       </VStack>
