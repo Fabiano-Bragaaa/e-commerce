@@ -10,6 +10,7 @@ import { Checkboxs } from "@components/Checkboxs";
 import { ScrollView } from "react-native";
 import { Button } from "@components/Button";
 import { HStack } from "@gluestack-ui/themed";
+import { ImageAddPhoto } from "@components/ImageAddPhoto";
 
 export function CreateAds() {
   const [switchValue, setSwitchValue] = useState(false);
@@ -26,7 +27,9 @@ export function CreateAds() {
             Escolha até 3 imagens para mostrar o quanto o seu produto é
             incrivel!
           </Text>
+          <ImageAddPhoto />
         </Box>
+
         <Box mt="$6">
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Sobre o Produto
