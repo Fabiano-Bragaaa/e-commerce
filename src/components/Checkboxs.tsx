@@ -12,8 +12,6 @@ import { useState } from "react";
 export function Checkboxs() {
   const [values, setValues] = useState(["Boleto"]);
 
-  console.log(values);
-
   return (
     <CheckboxGroup
       value={values}
