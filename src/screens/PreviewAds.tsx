@@ -1,7 +1,17 @@
+import { Center, HStack, Text, VStack } from "@gluestack-ui/themed";
+
 import { ImageAds } from "@components/ImageAds";
-import { Center, Text, VStack } from "@gluestack-ui/themed";
+import { TypeAds } from "@components/TypeAds";
+import { UserPhoto } from "@components/UserPhoto";
+
+import Boleto from "@assets/boleto.svg";
+import Pix from "@assets/pix.svg";
+import Cartao from "@assets/cartao.svg";
+import Deposito from "@assets/deposito.svg";
+import Dinheiro from "@assets/dinheiro.svg";
 
 import PagerView from "react-native-pager-view";
+import { TypePayment } from "@components/TypePayment";
 
 export function PreviewAds() {
   return (
@@ -52,6 +62,60 @@ export function PreviewAds() {
           key={3}
         />
       </PagerView>
+      <VStack p="$5" flex={1}>
+        <HStack alignItems="center" gap="$4">
+          <UserPhoto
+            w="$9"
+            h="$9"
+            source={{ uri: "https://github.com/Fabiano-Bragaaa.png" }}
+            alt="quem publicou"
+          />
+          <Text color="$black" fontFamily="$body" fontSize="$lg">
+            Fabiano Braga
+          </Text>
+        </HStack>
+        <TypeAds title="Usado" />
+        <HStack
+          alignItems="center"
+          gap="$4"
+          justifyContent="space-between"
+          my="$3"
+        >
+          <Text fontFamily="$heading" color="$black" fontSize="$2xl">
+            Luminaria pendente
+          </Text>
+          <HStack alignItems="center" gap="$1">
+            <Text color="$blue1" fontSize="$lg">
+              R$
+            </Text>
+            <Text color="$blue1" fontSize="$2xl" fontFamily="$heading">
+              45,00
+            </Text>
+          </HStack>
+        </HStack>
+        <Text
+          color="$gray100"
+          fontSize="$lg"
+          fontFamily="$body"
+          textTransform="capitalize"
+        >
+          Cras congue cursus in tortor sagittis placerat nunc, tellus arcu.
+          Vitae ante leo eget maecenas urna mattis cursus.
+        </Text>
+        <HStack my="$3" alignItems="center" gap="$2">
+          <Text color="$gray100" fontFamily="$heading">
+            Aceita troca?
+          </Text>
+          <Text color="$gray100" fontFamily="$body">
+            Não
+          </Text>
+        </HStack>
+        <TypePayment icon={Boleto} title="Boleto" />
+        <TypePayment icon={Pix} title="Pix" />
+        <TypePayment icon={Cartao} title="Cartão" />
+        <TypePayment icon={Dinheiro} title="Dinheiro" />
+        <TypePayment icon={Deposito} title="Deposito" />
+      </VStack>
     </VStack>
   );
 }
