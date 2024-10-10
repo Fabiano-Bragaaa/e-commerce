@@ -14,8 +14,11 @@ import Dinheiro from "@assets/dinheiro.svg";
 import PagerView from "react-native-pager-view";
 import { TypePayment } from "@components/TypePayment";
 import { Button } from "@components/Button";
+import { useNavigation } from "@react-navigation/native";
+import { AppRoutesNavigationProps } from "@routes/app.routes";
 
 export function PreviewAds() {
+  const navigation = useNavigation<AppRoutesNavigationProps>();
   return (
     <VStack flex={1}>
       <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
@@ -135,6 +138,7 @@ export function PreviewAds() {
           buttonVariant="basic"
           buttonVariantW="secondary"
           buttonVariantText="secondary"
+          onPress={() => navigation.navigate("editAds")}
         />
         <Button
           title="Publicar"

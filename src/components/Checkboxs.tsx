@@ -15,9 +15,7 @@ export function Checkboxs() {
   return (
     <CheckboxGroup
       value={values}
-      onChange={(keys) => {
-        setValues(keys);
-      }}
+      onChange={setValues}
       aria-label="Meios de pagamentos"
     >
       <VStack space="lg" w="$40" mt="$3">

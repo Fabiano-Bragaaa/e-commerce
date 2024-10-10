@@ -12,6 +12,7 @@ type AppRoutes = {
   myAds: undefined;
   signOut: undefined;
   CreateAds: undefined;
+  editAds: undefined;
   previewAds: undefined;
 };
 
@@ -28,6 +29,7 @@ import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { Platform } from "react-native";
 import { CreateAds } from "@screens/CreateAds";
 import { PreviewAds } from "@screens/PreviewAds";
+import { EditAds } from "@screens/EditAds";
 
 export function AppRoutes() {
   const { tokens } = gluestackUIConfig;
@@ -83,6 +85,11 @@ export function AppRoutes() {
       <Screen
         name="CreateAds"
         component={CreateAds}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
+      />
+      <Screen
+        name="editAds"
+        component={EditAds}
         options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
       <Screen
