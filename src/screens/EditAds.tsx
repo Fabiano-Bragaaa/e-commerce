@@ -15,7 +15,7 @@ import { HStack } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 
-export function CreateAds() {
+export function EditAds() {
   const [switchValue, setSwitchValue] = useState(false);
 
   const navigation = useNavigation<AppRoutesNavigationProps>();
@@ -23,7 +23,7 @@ export function CreateAds() {
   return (
     <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <VStack flex={1} padding="$5">
-        <HeaderCreateAds title="Criar anúncio" />
+        <HeaderCreateAds title="Editar anúncio" />
         <Box mt="$5">
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Imagens
