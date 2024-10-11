@@ -8,7 +8,7 @@ import { InputHome } from "@components/InputHome";
 import { MyAdsCard } from "@components/MyAdsCard";
 import { Ads } from "@components/Ads";
 import { ModalContent } from "@components/ModalContent";
-import { AdsTypeDTO } from "@dtos/Ads";
+import { AdsTypeDTO } from "@dtos/AdsDTO";
 import { useNavigation } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 
