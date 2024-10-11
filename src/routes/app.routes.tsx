@@ -1,16 +1,29 @@
+import { Platform } from "react-native";
+
 import {
   createBottomTabNavigator,
   BottomTabNavigationProp,
 } from "@react-navigation/bottom-tabs";
 
+import HomeIcon from "@assets/home.svg";
+import MyAdsIcon from "@assets/myAds.svg";
+import Logout from "@assets/logout.svg";
+
+import { gluestackUIConfig } from "../../config/gluestack-ui.config";
+
 import { Home } from "@screens/Home";
 import { MyAds } from "@screens/MyAds";
 import { SignOut } from "@screens/SignOut";
+import { EditAds } from "@screens/EditAds";
+import { CreateAds } from "@screens/CreateAds";
+import { AdsScreen } from "@screens/AdsScreen";
+import { PreviewAds } from "@screens/PreviewAds";
 
 type AppRoutes = {
   home: undefined;
   myAds: undefined;
   signOut: undefined;
+  ads: undefined;
   CreateAds: undefined;
   editAds: undefined;
   previewAds: undefined;
@@ -19,17 +32,6 @@ type AppRoutes = {
 export type AppRoutesNavigationProps = BottomTabNavigationProp<AppRoutes>;
 
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
-
-import HomeIcon from "@assets/home.svg";
-import MyAdsIcon from "@assets/myAds.svg";
-import Logout from "@assets/logout.svg";
-
-import { gluestackUIConfig } from "../../config/gluestack-ui.config";
-
-import { Platform } from "react-native";
-import { CreateAds } from "@screens/CreateAds";
-import { PreviewAds } from "@screens/PreviewAds";
-import { EditAds } from "@screens/EditAds";
 
 export function AppRoutes() {
   const { tokens } = gluestackUIConfig;
@@ -81,6 +83,11 @@ export function AppRoutes() {
             />
           ),
         }}
+      />
+      <Screen
+        name="ads"
+        component={AdsScreen}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
       <Screen
         name="CreateAds"
