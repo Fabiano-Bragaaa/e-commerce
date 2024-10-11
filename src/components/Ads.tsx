@@ -2,7 +2,7 @@ import { Box, Center, HStack, Text, VStack } from "@gluestack-ui/themed";
 import { UserPhoto } from "@components/UserPhoto";
 import { ImageAds } from "@components/ImageAds";
 import { TouchableOpacity, TouchableOpacityProps } from "react-native";
-import { AdsTypeDTO } from "@dtos/Ads";
+import { AdsTypeDTO } from "@dtos/AdsDTO";
 
 type Props = TouchableOpacityProps & {
   showAvatar?: boolean;
