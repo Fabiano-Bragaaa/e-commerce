@@ -2,14 +2,19 @@ import { Center, HStack, Icon, Text } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 
-import { ArrowLeft } from "lucide-react-native";
+import { ArrowLeft, PencilLine } from "lucide-react-native";
 import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 
 type Props = TouchableOpacityProps & {
   title: string;
+  showEditIcon?: boolean;
 };
 
-export function HeaderCreateAds({ title, ...rest }: Props) {
+export function HeaderCreateAds({
+  title,
+  showEditIcon = false,
+  ...rest
+}: Props) {
   const navigation = useNavigation<AppRoutesNavigationProps>();
   return (
     <HStack w="$full" alignItems="center" mt="$8">
@@ -21,6 +26,7 @@ export function HeaderCreateAds({ title, ...rest }: Props) {
           {title}
         </Text>
       </Center>
+      {showEditIcon && <Icon as={PencilLine} color="$gray100" size="xl" />}
     </HStack>
   );
 }

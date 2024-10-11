@@ -3,6 +3,8 @@ import { HeaderMyAds } from "@components/HeaderMyAds";
 import { SelectFilter } from "@components/SelectFilter";
 import { AdsTypeDTO } from "@dtos/AdsDTO";
 import { HStack, Text, VStack } from "@gluestack-ui/themed";
+import { useNavigation } from "@react-navigation/native";
+import { AppRoutesNavigationProps } from "@routes/app.routes";
 import { useState } from "react";
 import { FlatList } from "react-native";
 
@@ -30,6 +32,12 @@ export function MyAds() {
     },
   ]);
 
+  const navigation = useNavigation<AppRoutesNavigationProps>();
+
+  function handleInactiveOrActiveAds(id: string) {
+    navigation.navigate("disableAds");
+  }
+
   return (
     <VStack flex={1} p="$5">
       <HeaderMyAds />
@@ -42,7 +50,13 @@ export function MyAds() {
       <FlatList
         data={ads}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Ads showAvatar={false} data={item} />}
+        renderItem={({ item }) => (
+          <Ads
+            showAvatar={false}
+            data={item}
+            onPress={() => handleInactiveOrActiveAds(item.id)}
+          />
+        )}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         contentContainerStyle={{ paddingBottom: 14 }}

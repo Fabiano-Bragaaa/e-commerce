@@ -6,8 +6,8 @@ import {
 } from "@react-navigation/bottom-tabs";
 
 import HomeIcon from "@assets/home.svg";
-import MyAdsIcon from "@assets/myAds.svg";
 import Logout from "@assets/logout.svg";
+import MyAdsIcon from "@assets/myAds.svg";
 
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 
@@ -18,6 +18,7 @@ import { EditAds } from "@screens/EditAds";
 import { CreateAds } from "@screens/CreateAds";
 import { AdsScreen } from "@screens/AdsScreen";
 import { PreviewAds } from "@screens/PreviewAds";
+import { DisableAds } from "@screens/DisableAds";
 
 type AppRoutes = {
   home: undefined;
@@ -27,6 +28,7 @@ type AppRoutes = {
   CreateAds: undefined;
   editAds: undefined;
   previewAds: undefined;
+  disableAds: undefined;
 };
 
 export type AppRoutesNavigationProps = BottomTabNavigationProp<AppRoutes>;
@@ -89,6 +91,7 @@ export function AppRoutes() {
         component={AdsScreen}
         options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
+
       <Screen
         name="CreateAds"
         component={CreateAds}
@@ -102,6 +105,11 @@ export function AppRoutes() {
       <Screen
         name="previewAds"
         component={PreviewAds}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
+      />
+      <Screen
+        name="disableAds"
+        component={DisableAds}
         options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
     </Navigator>
