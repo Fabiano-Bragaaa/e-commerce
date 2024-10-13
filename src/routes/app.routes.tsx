@@ -17,6 +17,7 @@ import { SignOut } from "@screens/SignOut";
 import { EditAds } from "@screens/EditAds";
 import { CreateAds } from "@screens/CreateAds";
 import { AdsScreen } from "@screens/AdsScreen";
+import { ActiveAds } from "@screens/ActiveAds";
 import { PreviewAds } from "@screens/PreviewAds";
 import { DisableAds } from "@screens/DisableAds";
 
@@ -29,6 +30,7 @@ type AppRoutes = {
   editAds: undefined;
   previewAds: undefined;
   disableAds: undefined;
+  activeAds: undefined;
 };
 
 export type AppRoutesNavigationProps = BottomTabNavigationProp<AppRoutes>;
@@ -110,6 +112,11 @@ export function AppRoutes() {
       <Screen
         name="disableAds"
         component={DisableAds}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
+      />
+      <Screen
+        name="activeAds"
+        component={ActiveAds}
         options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
     </Navigator>
