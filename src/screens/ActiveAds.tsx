@@ -1,5 +1,5 @@
 import { ScrollView } from "react-native";
-import { HStack, Text, VStack } from "@gluestack-ui/themed";
+import { Box, HStack, Text, VStack } from "@gluestack-ui/themed";
 
 import { ImageAds } from "@components/ImageAds";
 import { TypeAds } from "@components/TypeAds";
@@ -18,7 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 import { HeaderCreateAds } from "@components/HeaderCreateAds";
 
-export function DisableAds() {
+export function ActiveAds() {
   const navigation = useNavigation<AppRoutesNavigationProps>();
   return (
     <VStack flex={1}>
@@ -30,7 +30,13 @@ export function DisableAds() {
             onPress={() => navigation.navigate("myAds")}
           />
         </VStack>
-        <PagerView initialPage={0} style={{ width: "100%", height: 320 }}>
+        <PagerView
+          initialPage={0}
+          style={{
+            width: "100%",
+            height: 320,
+          }}
+        >
           <ImageAds
             source={{
               uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
@@ -120,7 +126,7 @@ export function DisableAds() {
           <TypePayment icon={Deposito} title="Deposito" />
           <Button
             title="Desativar anúncio"
-            buttonVariant="secondary"
+            buttonVariant="primary"
             buttonVariantW="primary"
           />
           <Button
