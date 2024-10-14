@@ -1,4 +1,4 @@
-import { ScrollView } from "react-native";
+import { ImageBackground, ScrollView } from "react-native";
 import { Box, HStack, Text, VStack } from "@gluestack-ui/themed";
 
 import { ImageAds } from "@components/ImageAds";
@@ -30,47 +30,67 @@ export function ActiveAds() {
             onPress={() => navigation.navigate("myAds")}
           />
         </VStack>
-        <PagerView
-          initialPage={0}
-          style={{
-            width: "100%",
-            height: 320,
-          }}
-        >
-          <ImageAds
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
+        <Box h={320}>
+          <PagerView
+            initialPage={0}
+            style={{
+              width: "100%",
+              height: "100%",
             }}
-            alt="foto do produto"
-            w="$full"
-            h={320}
-            resizeMode="cover"
-            roundedType
-            key={1}
-          />
-          <ImageAds
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
-            }}
-            alt="foto do produto"
-            w="$full"
-            h={320}
-            resizeMode="cover"
-            roundedType
-            key={2}
-          />
-          <ImageAds
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
-            }}
-            alt="foto do produto"
-            w="$full"
-            h={320}
-            resizeMode="cover"
-            roundedType
-            key={3}
-          />
-        </PagerView>
+          >
+            <ImageAds
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
+              }}
+              alt="foto do produto"
+              w="$full"
+              h={320}
+              resizeMode="cover"
+              roundedType
+              key={1}
+            />
+            <ImageAds
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
+              }}
+              alt="foto do produto"
+              w="$full"
+              h={320}
+              resizeMode="cover"
+              roundedType
+              key={2}
+            />
+            <ImageAds
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
+              }}
+              alt="foto do produto"
+              w="$full"
+              h={320}
+              resizeMode="cover"
+              roundedType
+              key={3}
+            />
+          </PagerView>
+
+          <Box
+            position="absolute"
+            top={0}
+            bottom={0}
+            left={0}
+            right={0}
+            bg="rgba(0,0,0,.5)"
+            justifyContent="center"
+            alignItems="center"
+            flexDirection="row"
+            pointerEvents="none"
+          >
+            <Text color="$white" fontSize="$md" fontFamily="$heading">
+              ANÚNCIO DESATIVADO
+            </Text>
+          </Box>
+        </Box>
+
         <VStack p="$5" flex={1}>
           <HStack alignItems="center" gap="$4">
             <UserPhoto
@@ -125,7 +145,7 @@ export function ActiveAds() {
           <TypePayment icon={Dinheiro} title="Dinheiro" />
           <TypePayment icon={Deposito} title="Deposito" />
           <Button
-            title="Desativar anúncio"
+            title="Reativar anúncio"
             buttonVariant="primary"
             buttonVariantW="primary"
           />
