@@ -18,6 +18,9 @@ import { useNavigation } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 import { HeaderCreateAds } from "@components/HeaderCreateAds";
 
+import Power from "@assets/power.svg";
+import Trash from "@assets/trash.svg";
+
 export function DisableAds() {
   const navigation = useNavigation<AppRoutesNavigationProps>();
   return (
@@ -122,12 +125,14 @@ export function DisableAds() {
             title="Desativar anúncio"
             buttonVariant="secondary"
             buttonVariantW="primary"
+            icon={Power}
           />
           <Button
             title="excluir anuncio"
             buttonVariant="basic"
             buttonVariantText="secondary"
             buttonVariantW="primary"
+            icon={Trash}
           />
         </VStack>
       </ScrollView>
