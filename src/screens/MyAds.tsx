@@ -35,7 +35,7 @@ export function MyAds() {
   const navigation = useNavigation<AppRoutesNavigationProps>();
 
   function handleInactiveOrActiveAds(id: string) {
-    navigation.navigate("activeAds");
+    navigation.navigate("disableAds");
   }
 
   return (

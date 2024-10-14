@@ -1,9 +1,11 @@
+import { HStack } from "@gluestack-ui/themed";
 import {
   ButtonSpinner,
   Button as GluestackButton,
   Text,
 } from "@gluestack-ui/themed";
 import { ComponentProps } from "react";
+import { SvgProps } from "react-native-svg";
 
 type Props = ComponentProps<typeof GluestackButton> & {
   title: string;
@@ -11,6 +13,7 @@ type Props = ComponentProps<typeof GluestackButton> & {
   buttonVariantW?: "primary" | "secondary" | "basic";
   buttonVariant?: "primary" | "secondary" | "basic";
   buttonVariantText?: "primary" | "secondary";
+  icon?: React.FC<SvgProps>;
 };
 
 export function Button({
@@ -19,6 +22,7 @@ export function Button({
   buttonVariantW = "primary",
   buttonVariant = "primary",
   buttonVariantText = "primary",
+  icon: Icon,
   ...rest
 }: Props) {
   return (
@@ -45,14 +49,18 @@ export function Button({
       {isLoading ? (
         <ButtonSpinner color="white" />
       ) : (
-        <Text
-          fontFamily="$heading"
-          fontSize="$lg"
-          color={buttonVariantText === "primary" ? "$white" : "$black"}
-          textAlign="center"
-        >
-          {title}
-        </Text>
+        <HStack gap="$2">
+          {Icon && <Icon width={20} height={24} />}
+
+          <Text
+            fontFamily="$heading"
+            fontSize="$lg"
+            color={buttonVariantText === "primary" ? "$white" : "$black"}
+            textAlign="center"
+          >
+            {title}
+          </Text>
+        </HStack>
       )}
     </GluestackButton>
   );

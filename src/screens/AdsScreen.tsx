@@ -18,6 +18,8 @@ import { useNavigation } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 import { HeaderCreateAds } from "@components/HeaderCreateAds";
 
+import Whats from "@assets/whats.svg";
+
 export function AdsScreen() {
   const navigation = useNavigation<AppRoutesNavigationProps>();
   return (
@@ -142,6 +144,7 @@ export function AdsScreen() {
           title="Entrar em contato"
           buttonVariant="primary"
           buttonVariantW="primary"
+          icon={Whats}
         />
       </Box>
     </VStack>

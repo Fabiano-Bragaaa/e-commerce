@@ -17,6 +17,9 @@ import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 
+import Public from "@assets/public.svg";
+import ArrowLeft from "@assets/arrow-left.svg";
+
 export function PreviewAds() {
   const navigation = useNavigation<AppRoutesNavigationProps>();
   return (
@@ -139,11 +142,13 @@ export function PreviewAds() {
           buttonVariantW="secondary"
           buttonVariantText="secondary"
           onPress={() => navigation.navigate("editAds")}
+          icon={ArrowLeft}
         />
         <Button
           title="Publicar"
           buttonVariant="primary"
           buttonVariantW="secondary"
+          icon={Public}
         />
       </Box>
     </VStack>
