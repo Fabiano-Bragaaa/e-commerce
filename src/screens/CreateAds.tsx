@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ScrollView } from "react-native";
+import { FlatList, ScrollView } from "react-native";
 
-import { Box, Switch, Text, VStack } from "@gluestack-ui/themed";
+import { Box, Switch, Text, useToast, VStack } from "@gluestack-ui/themed";
 
 import { Input } from "@components/Input";
 import { Radio } from "@components/Radio";
@@ -15,10 +15,57 @@ import { HStack } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { ToastMessage } from "@components/ToastMessage";
+import { AdsPhoto } from "@components/AdsPhoto";
+
 export function CreateAds() {
   const [switchValue, setSwitchValue] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
 
   const navigation = useNavigation<AppRoutesNavigationProps>();
+  const toast = useToast();
+
+  async function handleSelectedAdsPhotos() {
+    try {
+      const photosSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsMultipleSelection: true,
+        aspect: [4, 4],
+      });
+
+      if (photosSelected.canceled) {
+        return;
+      }
+
+      if (photosSelected.assets && photosSelected.assets.length > 0) {
+        const newPhotos = photosSelected.assets.map((assets) => assets.uri);
+
+        if (selectedPhotos.length + newPhotos.length > 3) {
+          return toast.show({
+            placement: "top",
+            render: ({ id }) => (
+              <ToastMessage
+                id={id}
+                action="error"
+                title="O limite de imagens é 3. Tente escolher as 3 melhores fotos do seu produto."
+                onClose={() => toast.close(id)}
+              />
+            ),
+          });
+        }
+        setSelectedPhotos([...selectedPhotos, ...newPhotos]);
+      }
+    } catch (error) {
+      console.log("error ao fazer a listagem das fotos", error);
+    }
+  }
+
+  function removePhoto(uri: string) {
+    setSelectedPhotos(selectedPhotos.filter((item) => item !== uri));
+  }
 
   return (
     <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
@@ -32,7 +79,22 @@ export function CreateAds() {
             Escolha até 3 imagens para mostrar o quanto o seu produto é
             incrivel!
           </Text>
-          <ImageAddPhoto />
+          <Box flexDirection="row">
+            <FlatList
+              data={selectedPhotos}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <AdsPhoto uri={item} onRemove={() => removePhoto(item)} />
+              )}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              ListFooterComponent={
+                selectedPhotos.length < 3 ? (
+                  <ImageAddPhoto onPress={handleSelectedAdsPhotos} />
+                ) : null
+              }
+            />
+          </Box>
         </Box>
 
         <Box mt="$6">
