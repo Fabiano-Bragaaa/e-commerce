@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { ScrollView } from "react-native";
+
 import {
   Center,
   Icon,
@@ -8,23 +11,19 @@ import {
 } from "@gluestack-ui/themed";
 
 import Logo from "@assets/logo.png";
-import Avatar from "@assets/Avatar.png";
 
-import { Highlight } from "@components/Highlight";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
+import { Highlight } from "@components/Highlight";
 import { UserPhoto } from "@components/UserPhoto";
-import { Alert, ScrollView } from "react-native";
+import { ToastMessage } from "@components/ToastMessage";
 
 import { PencilLine } from "lucide-react-native";
-
-import { useState } from "react";
 
 import { useNavigation } from "@react-navigation/native";
 
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { ToastMessage } from "@components/ToastMessage";
 
 export function SignUp() {
   const [userPhoto, setUserPhoto] = useState(
