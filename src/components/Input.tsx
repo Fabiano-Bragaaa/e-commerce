@@ -14,20 +14,18 @@ type Props = ComponentProps<typeof InputField> & {
   securityType?: boolean;
   heightType?: "primary" | "secondary";
   errorMessage?: string | null;
-  isInvalid?: boolean;
 };
 
 export function Input({
   heightType = "primary",
   securityType = false,
-  isInvalid = false,
   errorMessage = null,
   ...rest
 }: Props) {
   const [security, setSecurity] = useState(false);
-  const invalid = !!errorMessage || !!isInvalid;
+  const invalid = !!errorMessage;
   return (
-    <FormControl isInvalid={invalid} w="$full" mb="$4">
+    <FormControl isInvalid={invalid} w="$full">
       <GluestackInput
         isInvalid={invalid}
         bg="$white"

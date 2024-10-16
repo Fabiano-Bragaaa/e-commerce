@@ -6,7 +6,9 @@ import { Box, Switch, Text, useToast, VStack } from "@gluestack-ui/themed";
 import { Input } from "@components/Input";
 import { Radio } from "@components/Radio";
 import { Button } from "@components/Button";
+import { AdsPhoto } from "@components/AdsPhoto";
 import { Checkboxs } from "@components/Checkboxs";
+import { ToastMessage } from "@components/ToastMessage";
 import { TextAreaInput } from "@components/TextAreaInput";
 import { ImageAddPhoto } from "@components/ImageAddPhoto";
 import { HeaderCreateAds } from "@components/HeaderCreateAds";
@@ -17,12 +19,31 @@ import { AppRoutesNavigationProps } from "@routes/app.routes";
 
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { ToastMessage } from "@components/ToastMessage";
-import { AdsPhoto } from "@components/AdsPhoto";
+
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { useForm, Controller } from "react-hook-form";
+
+type FormDataProps = {
+  title: string;
+  description: string;
+};
+
+const formAdsSchema = yup.object({
+  title: yup.string().required("Informe o titulo do seu anúncio."),
+  description: yup.string().required("Informe a descrição do seu anúncio."),
+});
 
 export function CreateAds() {
   const [switchValue, setSwitchValue] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({ resolver: yupResolver(formAdsSchema) });
 
   const navigation = useNavigation<AppRoutesNavigationProps>();
   const toast = useToast();
@@ -67,6 +88,10 @@ export function CreateAds() {
     setSelectedPhotos(selectedPhotos.filter((item) => item !== uri));
   }
 
+  async function handleCreateAds({ description, title }: FormDataProps) {
+    console.log({ description, title });
+  }
+
   return (
     <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <VStack flex={1} padding="$5">
@@ -101,8 +126,29 @@ export function CreateAds() {
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Sobre o Produto
           </Text>
-          <Input placeholder="Título do anúncio" />
-          <TextAreaInput />
+          <Controller
+            control={control}
+            name="title"
+            render={({ field: { value, onChange } }) => (
+              <Input
+                placeholder="Título do anúncio"
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.title?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { value, onChange } }) => (
+              <TextAreaInput
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.description?.message}
+              />
+            )}
+          />
         </Box>
         <Radio />
         <Box mt="$6">
@@ -133,7 +179,7 @@ export function CreateAds() {
             title="Avançar"
             buttonVariant="secondary"
             buttonVariantW="basic"
-            onPress={() => navigation.navigate("previewAds")}
+            onPress={handleSubmit(handleCreateAds)}
           />
         </HStack>
       </VStack>
