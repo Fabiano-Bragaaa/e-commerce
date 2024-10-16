@@ -38,6 +38,8 @@ const formAdsSchema = yup.object({
 export function CreateAds() {
   const [switchValue, setSwitchValue] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
+  const [radioSelect, setRadioSelect] = useState("");
+  const [values, setValues] = useState<string[] | []>([]);
 
   const {
     control,
@@ -89,6 +91,48 @@ export function CreateAds() {
   }
 
   async function handleCreateAds({ description, title }: FormDataProps) {
+    if (selectedPhotos.length === 0) {
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title="Escolha pelo menos uma foto para publicar o seu anúncio."
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+
+    if (radioSelect === "") {
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title="Escolha se o seu produto é novo ou usado."
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+
+    if (values.length === 0) {
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title="Escolha pelo menos um meio de pagamento."
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+
     console.log({ description, title });
   }
 
@@ -150,7 +194,7 @@ export function CreateAds() {
             )}
           />
         </Box>
-        <Radio />
+        <Radio radioSelect={radioSelect} setRadioSelect={setRadioSelect} />
         <Box mt="$6">
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Aceita troca?
@@ -166,7 +210,7 @@ export function CreateAds() {
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Meios de pagamentos aceitos
           </Text>
-          <Checkboxs />
+          <Checkboxs values={values} setValues={setValues} />
         </Box>
         <HStack w="$full" gap="$4" mt="$5">
           <Button
@@ -174,6 +218,7 @@ export function CreateAds() {
             buttonVariant="basic"
             buttonVariantW="basic"
             buttonVariantText="secondary"
+            onPress={() => navigation.navigate("home")}
           />
           <Button
             title="Avançar"
