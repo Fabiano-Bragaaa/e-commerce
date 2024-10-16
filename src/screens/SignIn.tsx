@@ -10,8 +10,34 @@ import { ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { useForm, Controller } from "react-hook-form";
+
+type FormDataProps = {
+  email: string;
+  password: string;
+};
+
+const signInSchema = yup.object({
+  email: yup.string().required("Informe o e-mail.").email("E-mail inválido."),
+  password: yup.string().required("Informe a sua senha."),
+});
+
 export function SignIn() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({ resolver: yupResolver(signInSchema) });
+
+  async function handleSignIn({ email, password }: FormDataProps) {
+    console.log({ email, password });
+  }
+
   return (
     <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <Center flex={1} bg="$gray600" p="$8">
@@ -23,11 +49,34 @@ export function SignIn() {
         <Text mt="$20" color="$gray100" fontFamily="$body" fontSize="$lg">
           Acesse sua conta
         </Text>
-        <Input placeholder="E-mail" />
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              placeholder="E-mail"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.email?.message}
+            />
+          )}
+        />
         <HStack>
-          <Input placeholder="Senha" securityType />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Senha"
+                securityType
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
         </HStack>
-        <Button title="Entrar" />
+        <Button title="Entrar" onPress={handleSubmit(handleSignIn)} />
 
         <Text mt="$24" color="$gray100" fontSize="$lg" fontFamily="$heading">
           Ainda não tem acesso?
