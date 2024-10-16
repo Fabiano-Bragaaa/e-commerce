@@ -9,8 +9,13 @@ import {
 } from "@gluestack-ui/themed";
 import { useState } from "react";
 
-export function Checkboxs() {
-  const [values, setValues] = useState(["Boleto"]);
+type CheckBoxProps = {
+  values: string[] | [];
+  setValues: (value: string[]) => void;
+};
+
+export function Checkboxs({ values, setValues }: CheckBoxProps) {
+  console.log(values);
 
   return (
     <CheckboxGroup

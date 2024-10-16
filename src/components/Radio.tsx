@@ -5,13 +5,15 @@ import {
   RadioIndicator,
   RadioLabel,
   RadioIcon,
-  HStack,
 } from "@gluestack-ui/themed";
 import { useState } from "react";
 
-export function Radio() {
-  const [radioSelect, setRadioSelect] = useState("");
+type RadioProps = {
+  radioSelect: string;
+  setRadioSelect: (value: string) => void;
+};
 
+export function Radio({ radioSelect, setRadioSelect }: RadioProps) {
   return (
     <RadioGroup
       value={radioSelect}
