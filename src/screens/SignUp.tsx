@@ -25,12 +25,53 @@ import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { useForm, Controller } from "react-hook-form";
+
+type FormDataProps = {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  password_confirm: string;
+};
+
+const signUpSchema = yup.object({
+  name: yup.string().required("informe o nome."),
+  email: yup.string().required("Informe o e-mail.").email("E-mail inválido."),
+  phone: yup
+    .string()
+    .matches(
+      /^\(?([1-9]{2})\)?[\s-]?([9]{1})[0-9]{4}-?[0-9]{4}$/,
+      "Número de celular inválido"
+    )
+    .required("Número de celular é obrigatório.")
+    .min(11, "Informe o seu numero de telefone com o DDD."),
+  password: yup
+    .string()
+    .required("Informe a sua senha.")
+    .min(6, "A sua senha deve conter no minimo 6 caracteres."),
+  password_confirm: yup
+    .string()
+    .required("Confirme sua senha.")
+    .oneOf([yup.ref("password"), ""], "As senhas não confere."),
+});
+
 export function SignUp() {
   const [userPhoto, setUserPhoto] = useState(
     "https://github.com/Fabiano-Bragaaa.png"
   );
+
   const navigation = useNavigation();
   const toast = useToast();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({ resolver: yupResolver(signUpSchema) });
 
   async function handleUserPhotoSelect() {
     try {
@@ -72,6 +113,16 @@ export function SignUp() {
     }
   }
 
+  async function handleSignUp({
+    email,
+    name,
+    password,
+    password_confirm,
+    phone,
+  }: FormDataProps) {
+    console.log({ email, name, password, password_confirm, phone });
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -101,12 +152,78 @@ export function SignUp() {
           </ButtonGluestack>
         </Center>
 
-        <Input placeholder="Nome" />
-        <Input placeholder="E-mail" />
-        <Input placeholder="Telefone" />
-        <Input placeholder="Senha" securityType />
-        <Input placeholder="Confirmar senha" securityType />
-        <Button title="Entrar" buttonVariant="secondary" />
+        <Controller
+          control={control}
+          name="name"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              placeholder="Nome"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.name?.message}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              placeholder="E-mail"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.email?.message}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="phone"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              placeholder="Telefone"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.phone?.message}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              placeholder="Senha"
+              securityType
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.password?.message}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="password_confirm"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              placeholder="Confirmar senha"
+              securityType
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.password_confirm?.message}
+            />
+          )}
+        />
+
+        <Button
+          title="Entrar"
+          buttonVariant="secondary"
+          onPress={handleSubmit(handleSignUp)}
+        />
 
         <Text mt="$8" color="$gray100" fontSize="$lg" fontFamily="$heading">
           Já tem uma conta?
