@@ -1,8 +1,25 @@
-import { Textarea, TextareaInput } from "@gluestack-ui/themed";
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorText,
+  Textarea,
+  TextareaInput,
+} from "@gluestack-ui/themed";
+import { ComponentProps } from "react";
 
-export function TextAreaInput() {
+type Props = ComponentProps<typeof TextareaInput> & {
+  errorMessage?: string | null;
+  isInvalid?: boolean;
+};
+
+export function TextAreaInput({
+  errorMessage = null,
+  isInvalid = false,
+  ...rest
+}: Props) {
+  const invalid = !!errorMessage;
   return (
-    <>
+    <FormControl isInvalid={invalid} w="$full">
       <Textarea
         height={200}
         bg="$white"
@@ -17,8 +34,14 @@ export function TextAreaInput() {
           fontSize="$lg"
           color="$gray300"
           placeholderTextColor="$gray300"
+          {...rest}
         />
       </Textarea>
-    </>
+      <FormControlError>
+        <FormControlErrorText color="$red500">
+          {errorMessage}
+        </FormControlErrorText>
+      </FormControlError>
+    </FormControl>
   );
 }
