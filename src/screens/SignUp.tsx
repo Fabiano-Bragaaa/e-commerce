@@ -119,9 +119,7 @@ export function SignUp() {
     password,
     password_confirm,
     phone,
-  }: FormDataProps) {
-    console.log({ email, name, password, password_confirm, phone });
-  }
+  }: FormDataProps) {}
 
   return (
     <ScrollView

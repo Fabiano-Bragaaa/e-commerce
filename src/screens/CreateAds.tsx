@@ -132,8 +132,6 @@ export function CreateAds() {
         ),
       });
     }
-
-    console.log({ description, title });
   }
 
   return (

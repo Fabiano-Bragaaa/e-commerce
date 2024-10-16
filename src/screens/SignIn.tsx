@@ -34,9 +34,7 @@ export function SignIn() {
     formState: { errors },
   } = useForm<FormDataProps>({ resolver: yupResolver(signInSchema) });
 
-  async function handleSignIn({ email, password }: FormDataProps) {
-    console.log({ email, password });
-  }
+  async function handleSignIn({ email, password }: FormDataProps) {}
 
   return (
     <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
