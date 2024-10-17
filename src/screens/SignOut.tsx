@@ -14,7 +14,7 @@ export function SignOut() {
         <Text color="$gray100" fontFamily="$body" fontSize="$lg">
           Tem certeza que quer sair do aplicativo?
         </Text>
-        <HStack gap="$2">
+        <HStack gap="$4" mt="$8" alignItems="center">
           <Button
             title="Voltar"
             buttonVariant="basic"

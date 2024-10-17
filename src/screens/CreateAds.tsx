@@ -28,11 +28,13 @@ import { useForm, Controller } from "react-hook-form";
 type FormDataProps = {
   title: string;
   description: string;
+  price: string;
 };
 
 const formAdsSchema = yup.object({
   title: yup.string().required("Informe o titulo do seu anúncio."),
   description: yup.string().required("Informe a descrição do seu anúncio."),
+  price: yup.string().required("Informe o valor do seu produto."),
 });
 
 export function CreateAds() {
@@ -40,6 +42,19 @@ export function CreateAds() {
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
   const [radioSelect, setRadioSelect] = useState("");
   const [values, setValues] = useState<string[] | []>([]);
+  const [formattedPrice, setFormattedPrice] = useState("");
+
+  function handlePreviewAds({ description, title }: FormDataProps) {
+    navigation.navigate("previewAds", {
+      title,
+      description,
+      images: selectedPhotos,
+      values,
+      radioSelect,
+      switchValue,
+      price: formattedPrice,
+    });
+  }
 
   const {
     control,
@@ -49,6 +64,24 @@ export function CreateAds() {
 
   const navigation = useNavigation<AppRoutesNavigationProps>();
   const toast = useToast();
+
+  function formatCurrency(text: string) {
+    // Remove qualquer caractere que não seja número
+    let cleanValue = text.replace(/\D/g, "");
+
+    if (cleanValue.length > 2) {
+      // Se tiver mais de 2 dígitos, começa a formatar como valor monetário
+      cleanValue = cleanValue.replace(/(\d)(\d{2})$/, "$1,$2");
+      cleanValue = cleanValue.replace(/(?=(\d{3})+(\D))\B/g, ".");
+    }
+
+    return cleanValue;
+  }
+
+  function handlePriceChange(text: string) {
+    const formatted = formatCurrency(text);
+    setFormattedPrice(formatted); // Atualiza o estado com o valor formatado
+  }
 
   async function handleSelectedAdsPhotos() {
     try {
@@ -90,7 +123,7 @@ export function CreateAds() {
     setSelectedPhotos(selectedPhotos.filter((item) => item !== uri));
   }
 
-  async function handleCreateAds({ description, title }: FormDataProps) {
+  async function handleCreateAds({ description, title, price }: FormDataProps) {
     if (selectedPhotos.length === 0) {
       return toast.show({
         placement: "top",
@@ -132,6 +165,8 @@ export function CreateAds() {
         ),
       });
     }
+
+    await handlePreviewAds({ description, title, price });
   }
 
   return (
@@ -193,6 +228,28 @@ export function CreateAds() {
           />
         </Box>
         <Radio radioSelect={radioSelect} setRadioSelect={setRadioSelect} />
+        <Box mt="$6">
+          <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
+            Venda
+          </Text>
+          <Controller
+            control={control}
+            name="price"
+            render={({ field: { onChange } }) => (
+              <Input
+                placeholder="Valor do produto"
+                keyboardType="numeric"
+                value={formattedPrice}
+                onChangeText={(text) => {
+                  handlePriceChange(text);
+                  onChange(text);
+                }}
+                errorMessage={errors.price?.message}
+                showValue
+              />
+            )}
+          />
+        </Box>
         <Box mt="$6">
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Aceita troca?
