@@ -41,24 +41,20 @@ export function Checkboxs({ values, setValues }: CheckBoxProps) {
           <CheckboxLabel>Dinheiro</CheckboxLabel>
         </Checkbox>
         <Checkbox
-          value="CartaDeCrédito"
+          value="CartaDeCredito"
           aria-label="Cartão de Crédito"
           gap="$5"
         >
           <CheckboxIndicator>
             <CheckboxIcon as={CheckIcon} color="$white" size="sm" />
           </CheckboxIndicator>
-          <CheckboxLabel>Cartão de Crédito</CheckboxLabel>
+          <CheckboxLabel>Cartão</CheckboxLabel>
         </Checkbox>
-        <Checkbox
-          value="DepositoBancario"
-          aria-label="Depósito Bancário"
-          gap="$5"
-        >
+        <Checkbox value="DepositoBancario" aria-label="Depósito" gap="$5">
           <CheckboxIndicator>
             <CheckboxIcon as={CheckIcon} color="$white" size="sm" />
           </CheckboxIndicator>
-          <CheckboxLabel>Depósito Bancário</CheckboxLabel>
+          <CheckboxLabel>Depósito</CheckboxLabel>
         </Checkbox>
       </VStack>
     </CheckboxGroup>

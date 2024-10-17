@@ -14,17 +14,60 @@ import Dinheiro from "@assets/dinheiro.svg";
 import PagerView from "react-native-pager-view";
 import { TypePayment } from "@components/TypePayment";
 import { Button } from "@components/Button";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 
 import Public from "@assets/public.svg";
 import ArrowLeft from "@assets/arrow-left.svg";
 
+type RoutesParamsProps = {
+  title: string;
+  description: string;
+  radioSelect: string;
+  price: string;
+  images: string[];
+  values: string[] | [];
+  switchValue: boolean;
+};
+
 export function PreviewAds() {
   const navigation = useNavigation<AppRoutesNavigationProps>();
+
+  const route = useRoute();
+  const {
+    title,
+    description,
+    images,
+    values,
+    radioSelect,
+    switchValue,
+    price,
+  } = route.params as RoutesParamsProps;
+
+  function getPaymentIcon(method: string | null) {
+    switch (method) {
+      case "Boleto":
+        return <TypePayment icon={Boleto} title="Boleto" />;
+      case "Pix":
+        return <TypePayment icon={Pix} title="Pix" />;
+      case "CartaDeCredito":
+        return <TypePayment icon={Cartao} title="Cartão" />;
+      case "Dinheiro":
+        return <TypePayment icon={Dinheiro} title="Dinheiro" />;
+      case "DepositoBancario":
+        return <TypePayment icon={Deposito} title="Deposito" />;
+      default:
+        return null;
+    }
+  }
+
   return (
     <VStack flex={1}>
-      <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ flexGrow: 1 }}
+        contentContainerStyle={{ paddingBottom: 70 }}
+        showsVerticalScrollIndicator={false}
+      >
         <VStack w="$full" h={150} bg="$blue1" justifyContent="flex-end">
           <Center mb="$6">
             <Text color="$white" fontFamily="$heading" mb="$1">
@@ -37,39 +80,19 @@ export function PreviewAds() {
         </VStack>
 
         <PagerView initialPage={0} style={{ width: "100%", height: 320 }}>
-          <ImageAds
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
-            }}
-            alt="foto do produto"
-            w="$full"
-            h={320}
-            resizeMode="cover"
-            roundedType
-            key={1}
-          />
-          <ImageAds
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
-            }}
-            alt="foto do produto"
-            w="$full"
-            h={320}
-            resizeMode="cover"
-            roundedType
-            key={2}
-          />
-          <ImageAds
-            source={{
-              uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3avUFThjxODyz5vGd7Z1VAErcYQrqi5fweg&s.png",
-            }}
-            alt="foto do produto"
-            w="$full"
-            h={320}
-            resizeMode="cover"
-            roundedType
-            key={3}
-          />
+          {images.map((image, index) => (
+            <ImageAds
+              source={{
+                uri: image,
+              }}
+              alt="foto do produto"
+              w="$full"
+              h={320}
+              resizeMode="cover"
+              roundedType
+              key={index}
+            />
+          ))}
         </PagerView>
         <VStack p="$5" flex={1}>
           <HStack alignItems="center" gap="$4">
@@ -83,7 +106,7 @@ export function PreviewAds() {
               Fabiano Braga
             </Text>
           </HStack>
-          <TypeAds title="Usado" />
+          <TypeAds title={radioSelect === "newProduct" ? "novo" : "usado"} />
           <HStack
             alignItems="center"
             gap="$4"
@@ -91,14 +114,14 @@ export function PreviewAds() {
             my="$3"
           >
             <Text fontFamily="$heading" color="$black" fontSize="$2xl">
-              Luminaria pendente
+              {title}
             </Text>
             <HStack alignItems="center" gap="$1">
               <Text color="$blue1" fontSize="$lg">
                 R$
               </Text>
               <Text color="$blue1" fontSize="$2xl" fontFamily="$heading">
-                45,00
+                {price}
               </Text>
             </HStack>
           </HStack>
@@ -108,22 +131,21 @@ export function PreviewAds() {
             fontFamily="$body"
             textTransform="capitalize"
           >
-            Cras congue cursus in tortor sagittis placerat nunc, tellus arcu.
-            Vitae ante leo eget maecenas urna mattis cursus.
+            {description}
           </Text>
           <HStack my="$5" alignItems="center" gap="$2">
             <Text color="$gray100" fontFamily="$heading">
               Aceita troca?
             </Text>
             <Text color="$gray100" fontFamily="$body">
-              Não
+              {switchValue ? "Sim" : "Não"}
             </Text>
           </HStack>
-          <TypePayment icon={Boleto} title="Boleto" />
-          <TypePayment icon={Pix} title="Pix" />
-          <TypePayment icon={Cartao} title="Cartão" />
-          <TypePayment icon={Dinheiro} title="Dinheiro" />
-          <TypePayment icon={Deposito} title="Deposito" />
+          <Box>
+            {values.map((method, index) => (
+              <HStack key={index}>{getPaymentIcon(method)}</HStack>
+            ))}
+          </Box>
         </VStack>
       </ScrollView>
       <Box

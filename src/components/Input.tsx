@@ -1,3 +1,4 @@
+import { Text } from "@gluestack-ui/themed";
 import { FormControl, FormControlErrorText } from "@gluestack-ui/themed";
 import {
   Center,
@@ -12,12 +13,14 @@ import { TouchableOpacity } from "react-native";
 
 type Props = ComponentProps<typeof InputField> & {
   securityType?: boolean;
+  showValue?: boolean;
   heightType?: "primary" | "secondary";
   errorMessage?: string | null;
 };
 
 export function Input({
   heightType = "primary",
+  showValue = false,
   securityType = false,
   errorMessage = null,
   ...rest
@@ -35,6 +38,13 @@ export function Input({
         w="$full"
         h={heightType === "primary" ? "$12" : "$64"}
       >
+        {showValue && (
+          <Center gap="$3" pl="$4">
+            <Text color="$gray200" fontFamily="$heading" fontSize="$lg">
+              R$
+            </Text>
+          </Center>
+        )}
         <InputField
           fontFamily="$body"
           fontSize="$lg"
