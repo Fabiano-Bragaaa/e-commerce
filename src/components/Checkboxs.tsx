@@ -15,8 +15,6 @@ type CheckBoxProps = {
 };
 
 export function Checkboxs({ values, setValues }: CheckBoxProps) {
-  console.log(values);
-
   return (
     <CheckboxGroup
       value={values}

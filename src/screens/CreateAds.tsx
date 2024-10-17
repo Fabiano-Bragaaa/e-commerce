@@ -97,7 +97,7 @@ export function CreateAds() {
         render: ({ id }) => (
           <ToastMessage
             id={id}
-            action="error"
+            action="success"
             title="Escolha pelo menos uma foto para publicar o seu anúncio."
             onClose={() => toast.close(id)}
           />
@@ -132,8 +132,6 @@ export function CreateAds() {
         ),
       });
     }
-
-    console.log({ description, title });
   }
 
   return (
