@@ -15,6 +15,7 @@ export function ModalContent({ onClose }: Props) {
   const [groups, setGroups] = useState(["Novo", "Usado"]);
   const [groupSelected, setGroupSelected] = useState("Novo");
   const [switchValue, setSwitchValue] = useState(false);
+  const [values, setValues] = useState<string[] | []>([]);
 
   return (
     <Box flex={1} bg="rgba(0,0,0,.60)">
@@ -74,7 +75,7 @@ export function ModalContent({ onClose }: Props) {
         <Text color="$gray100" fontFamily="$heading" fontSize="$lg" mt="$3">
           Meios de pagamento aceitos
         </Text>
-        <Checkboxs />
+        <Checkboxs values={values} setValues={setValues}/>
         <HStack w="$full" gap="$4">
           <Button
             title="Resetar filtros"
