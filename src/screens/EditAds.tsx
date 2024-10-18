@@ -1,29 +1,205 @@
 import { useState } from "react";
-import { ScrollView } from "react-native";
+import { FlatList, ScrollView } from "react-native";
 
-import { Box, Switch, Text, VStack } from "@gluestack-ui/themed";
+import { Box, Switch, Text, useToast, VStack } from "@gluestack-ui/themed";
 
 import { Input } from "@components/Input";
 import { Radio } from "@components/Radio";
 import { Button } from "@components/Button";
+import { AdsPhoto } from "@components/AdsPhoto";
 import { Checkboxs } from "@components/Checkboxs";
+import { ToastMessage } from "@components/ToastMessage";
 import { TextAreaInput } from "@components/TextAreaInput";
 import { ImageAddPhoto } from "@components/ImageAddPhoto";
 import { HeaderCreateAds } from "@components/HeaderCreateAds";
 
 import { HStack } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppRoutesNavigationProps } from "@routes/app.routes";
 
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { useForm, Controller } from "react-hook-form";
+
+type RoutesParamsProps = {
+  title: string;
+  description: string;
+  radioSelect: string;
+  price: string;
+  images: string[];
+  values: string[] | [];
+  switchValue: boolean;
+};
+
+type FormDataProps = {
+  title: string;
+  description: string;
+  price: string;
+};
+
+const formAdsSchema = yup.object({
+  title: yup.string().required("Informe o titulo do seu anúncio."),
+  description: yup.string().required("Informe a descrição do seu anúncio."),
+  price: yup.string().required("Informe o valor do seu produto."),
+});
+
 export function EditAds() {
-  const [switchValue, setSwitchValue] = useState(false);
+  const route = useRoute();
+
+  const {
+    description,
+    images,
+    price,
+    radioSelect,
+    switchValue,
+    title,
+    values,
+  } = route.params as RoutesParamsProps;
+
+  const [switchValueEdit, setSwitchValueEdit] = useState<boolean>(switchValue);
+  const [selectedPhotos, setSelectedPhotos] = useState<string[]>(images);
+  const [radioSelectValue, setRadioSelectValue] = useState<string>(radioSelect);
+  const [valuesCheckbox, setValuesCheckbox] = useState<string[] | []>(values);
+  const [formattedPrice, setFormattedPrice] = useState(price);
+
+  function handlePreviewAds({ description, title, price }: FormDataProps) {
+    navigation.navigate("previewAds", {
+      title,
+      description,
+      images: selectedPhotos,
+      values: valuesCheckbox,
+      radioSelect: radioSelectValue,
+      switchValue: switchValueEdit,
+      price: formattedPrice,
+    });
+  }
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(formAdsSchema),
+    defaultValues: {
+      title,
+      description,
+      price,
+    },
+  });
 
   const navigation = useNavigation<AppRoutesNavigationProps>();
+  const toast = useToast();
+
+  function formatCurrency(text: string) {
+    let cleanValue = text.replace(/\D/g, "");
+
+    if (cleanValue.length > 2) {
+      cleanValue = cleanValue.replace(/(\d)(\d{2})$/, "$1,$2");
+      cleanValue = cleanValue.replace(/(?=(\d{3})+(\D))\B/g, ".");
+    }
+
+    return cleanValue;
+  }
+
+  function handlePriceChange(text: string) {
+    const formatted = formatCurrency(text);
+    setFormattedPrice(formatted);
+  }
+
+  async function handleSelectedAdsPhotos() {
+    try {
+      const photosSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsMultipleSelection: true,
+        aspect: [4, 4],
+      });
+
+      if (photosSelected.canceled) {
+        return;
+      }
+
+      if (photosSelected.assets && photosSelected.assets.length > 0) {
+        const newPhotos = photosSelected.assets.map((assets) => assets.uri);
+
+        if (selectedPhotos.length + newPhotos.length > 3) {
+          return toast.show({
+            placement: "top",
+            render: ({ id }) => (
+              <ToastMessage
+                id={id}
+                action="error"
+                title="O limite de imagens é 3. Tente escolher as 3 melhores fotos do seu produto."
+                onClose={() => toast.close(id)}
+              />
+            ),
+          });
+        }
+        setSelectedPhotos([...selectedPhotos, ...newPhotos]);
+      }
+    } catch (error) {
+      console.log("error ao fazer a listagem das fotos", error);
+    }
+  }
+
+  function removePhoto(uri: string) {
+    setSelectedPhotos(selectedPhotos.filter((item) => item !== uri));
+  }
+
+  async function handleCreateAds({ description, title, price }: FormDataProps) {
+    if (selectedPhotos.length === 0) {
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="success"
+            title="Escolha pelo menos uma foto para publicar o seu anúncio."
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+
+    if (radioSelect === "") {
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title="Escolha se o seu produto é novo ou usado."
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+
+    if (values.length === 0) {
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title="Escolha pelo menos um meio de pagamento."
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+
+    await handlePreviewAds({ title, description, price });
+  }
 
   return (
     <ScrollView style={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <VStack flex={1} padding="$5">
-        <HeaderCreateAds title="Editar anúncio" />
+        <HeaderCreateAds title="Criar anúncio" />
         <Box mt="$5">
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Imagens
@@ -32,25 +208,86 @@ export function EditAds() {
             Escolha até 3 imagens para mostrar o quanto o seu produto é
             incrivel!
           </Text>
-          <ImageAddPhoto />
+          <Box flexDirection="row">
+            <FlatList
+              data={selectedPhotos}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <AdsPhoto uri={item} onRemove={() => removePhoto(item)} />
+              )}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              ListFooterComponent={
+                selectedPhotos.length < 3 ? (
+                  <ImageAddPhoto onPress={handleSelectedAdsPhotos} />
+                ) : null
+              }
+            />
+          </Box>
         </Box>
 
         <Box mt="$6">
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Sobre o Produto
           </Text>
-          <Input placeholder="Título do anúncio" />
-          <TextAreaInput />
+          <Controller
+            control={control}
+            name="title"
+            render={({ field: { value, onChange } }) => (
+              <Input
+                placeholder="Título do anúncio"
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.title?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="description"
+            render={({ field: { value, onChange } }) => (
+              <TextAreaInput
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.description?.message}
+              />
+            )}
+          />
         </Box>
-        <Radio />
+        <Radio
+          radioSelect={radioSelectValue}
+          setRadioSelect={setRadioSelectValue}
+        />
+        <Box mt="$6">
+          <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
+            Venda
+          </Text>
+          <Controller
+            control={control}
+            name="price"
+            render={({ field: { onChange } }) => (
+              <Input
+                placeholder="Valor do produto"
+                keyboardType="numeric"
+                value={formattedPrice}
+                onChangeText={(text) => {
+                  handlePriceChange(text);
+                  onChange(text);
+                }}
+                errorMessage={errors.price?.message}
+                showValue
+              />
+            )}
+          />
+        </Box>
         <Box mt="$6">
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Aceita troca?
           </Text>
           <Switch
             size="lg"
-            value={switchValue}
-            onValueChange={() => setSwitchValue(!switchValue)}
+            value={switchValueEdit}
+            onValueChange={() => setSwitchValueEdit(!switchValueEdit)}
             alignSelf="flex-start"
           />
         </Box>
@@ -58,7 +295,7 @@ export function EditAds() {
           <Text color="$gray100" fontFamily="$heading" fontSize="$lg">
             Meios de pagamentos aceitos
           </Text>
-          <Checkboxs />
+          <Checkboxs values={valuesCheckbox} setValues={setValuesCheckbox} />
         </Box>
         <HStack w="$full" gap="$4" mt="$5">
           <Button
@@ -66,12 +303,13 @@ export function EditAds() {
             buttonVariant="basic"
             buttonVariantW="basic"
             buttonVariantText="secondary"
+            onPress={() => navigation.navigate("home")}
           />
           <Button
             title="Avançar"
             buttonVariant="secondary"
             buttonVariantW="basic"
-            onPress={() => navigation.navigate("previewAds")}
+            onPress={handleSubmit(handleCreateAds)}
           />
         </HStack>
       </VStack>

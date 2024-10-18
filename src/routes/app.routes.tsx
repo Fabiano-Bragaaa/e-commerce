@@ -27,7 +27,15 @@ type AppRoutes = {
   signOut: undefined;
   ads: undefined;
   CreateAds: undefined;
-  editAds: undefined;
+  editAds: {
+    title: string;
+    description: string;
+    price: string;
+    radioSelect: string;
+    images: string[];
+    values: string[] | [];
+    switchValue: boolean;
+  };
   previewAds: {
     title: string;
     description: string;

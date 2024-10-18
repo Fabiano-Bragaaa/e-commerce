@@ -61,6 +61,18 @@ export function PreviewAds() {
     }
   }
 
+  function handleEditData() {
+    navigation.navigate("editAds", {
+      title,
+      description,
+      images,
+      values,
+      radioSelect,
+      switchValue,
+      price,
+    });
+  }
+
   return (
     <VStack flex={1}>
       <ScrollView
@@ -163,7 +175,7 @@ export function PreviewAds() {
           buttonVariant="basic"
           buttonVariantW="secondary"
           buttonVariantText="secondary"
-          onPress={() => navigation.navigate("editAds")}
+          onPress={handleEditData}
           icon={ArrowLeft}
         />
         <Button
