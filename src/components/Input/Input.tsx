@@ -1,15 +1,20 @@
 import { Input as GSInput, Icon, InputField } from "@gluestack-ui/themed";
 import { ComponentProps } from "react";
-import { EyeIcon } from "lucide-react-native";
+import { EyeIcon, EyeOff } from "lucide-react-native";
+import { Pressable } from "react-native";
 
 type InputProps = ComponentProps<typeof InputField> & {
   isPassword?: boolean;
   toggleSecurity?: boolean;
+  onToggleSecurity?: () => void;
+  boxProps?: ComponentProps<typeof GSInput>;
 };
 
 export function Input({
   isPassword = false,
   toggleSecurity = false,
+  onToggleSecurity,
+  boxProps,
   ...inputField
 }: InputProps) {
   return (
@@ -21,6 +26,7 @@ export function Input({
       alignItems="center"
       px="$4"
       bg="$white"
+      {...boxProps}
     >
       <InputField
         fontFamily="$body"
@@ -31,7 +37,15 @@ export function Input({
         placeholderTextColor="$gray4"
         {...inputField}
       />
-      <Icon as={EyeIcon} color="$gray4" size="lg" />
+      {isPassword && (
+        <Pressable onPress={onToggleSecurity}>
+          <Icon
+            as={toggleSecurity ? EyeOff : EyeIcon}
+            color="$gray4"
+            size="lg"
+          />
+        </Pressable>
+      )}
     </GSInput>
   );
 }
