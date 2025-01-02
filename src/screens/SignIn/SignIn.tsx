@@ -8,10 +8,40 @@ import { Button } from "@components/Button/Button";
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+
+type FormDataProps = {
+  email: string;
+  password: string;
+};
+
+const signInSchema = yup.object({
+  email: yup
+    .string()
+    .required("Informe o seu e-mail.")
+    .email("E-mail invalido"),
+  password: yup
+    .string()
+    .required("Informe a sua senha.")
+    .min(6, "A senha deve ter pelo menos 6 dígitos."),
+});
+
 export function SignIn() {
   const [isToggle, setIsToggle] = useState<boolean>(false);
 
   const { navigate } = useNavigation<AuthNavigatorRoutesProps>();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(signInSchema),
+  });
+
+  function handleAccessYourAccount() {}
 
   function handleSignUp() {
     navigate("signUp");
@@ -39,16 +69,38 @@ export function SignIn() {
           >
             Acesse sua conta
           </Text>
-          <Input placeholder="E-mail" boxProps={{ mb: "$6" }} />
-          <Input
-            placeholder="Senha"
-            isPassword
-            onToggleSecurity={() => setIsToggle(!isToggle)}
-            toggleSecurity={isToggle}
-            secureTextEntry={isToggle}
-            boxProps={{ mb: "$8" }}
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="E-mail"
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.email?.message}
+              />
+            )}
           />
-          <Button title="Entrar" />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Senha"
+                isPassword
+                onToggleSecurity={() => setIsToggle(!isToggle)}
+                toggleSecurity={isToggle}
+                secureTextEntry={isToggle}
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
+          <Button
+            title="Entrar"
+            onPress={handleSubmit(handleAccessYourAccount)}
+          />
         </Center>
       </Box>
       <Center

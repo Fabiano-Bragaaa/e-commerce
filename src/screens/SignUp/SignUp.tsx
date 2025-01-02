@@ -6,7 +6,9 @@ import {
   Center,
   Icon,
   Image,
+  Pressable,
   Text,
+  useToast,
   VStack,
 } from "@gluestack-ui/themed";
 import { useState } from "react";
@@ -18,9 +20,171 @@ import { UserPhoto } from "@components/UserPhoto/UserPhoto";
 import { PencilLine } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
+import { Toast } from "@components/Toast/Toast";
+
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+
+type FormDataProps = {
+  name: string;
+  email: string;
+  tel: string;
+  password: string;
+  password_confirm: string;
+};
+
+const signUpSchema = yup.object({
+  name: yup.string().required("Informe o seu nome."),
+  email: yup.string().required("Informe um e-mail.").email("E-mail invalido"),
+  tel: yup.string().required("Informe o seu numero de telefone."),
+  password: yup
+    .string()
+    .required("Informe a senha.")
+    .min(6, "A senha deve ter pelo menos 6 dígitos."),
+  password_confirm: yup
+    .string()
+    .required("Confirme a sua senha.")
+    .oneOf([yup.ref("password"), ""], "A confirmação da senha não confere."),
+});
+
 export function SignUp() {
-  const [isToggle, setIsToggle] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTogglePassword, setIsTogglePassword] = useState<boolean>(false);
+  const [isTogglePasswordConfirm, setIsTogglePasswordConfirm] =
+    useState<boolean>(false);
+  const [avatar, setAvatar] = useState(
+    "https://github.com/fabiano-bragaaa.png"
+  );
+  const [avatarFile, setAvatarFile] = useState<any>();
+
+  const toast = useToast();
+
   const { goBack } = useNavigation();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(signUpSchema),
+  });
+
+  async function handleUserPhotoSelected() {
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      });
+
+      if (photoSelected.canceled) {
+        return;
+      }
+
+      const photoURI = photoSelected.assets[0].uri;
+
+      if (photoURI) {
+        const photoInfo = (await FileSystem.getInfoAsync(photoURI)) as {
+          size: number;
+        };
+
+        if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
+          return toast.show({
+            duration: 4000,
+            placement: "top",
+            render: ({ id }) => (
+              <Toast
+                title="Essa imagem é muito grande"
+                description="Escolha uma de até 5MB"
+                action="error"
+                id={id}
+                onClose={() => toast.close(id)}
+              />
+            ),
+          });
+        }
+
+        const fileExtension = photoURI.split(".").pop();
+
+        const photoFile = {
+          name: `nome-do-usuario.${fileExtension}`.toLocaleLowerCase(),
+          uri: photoURI,
+          type: `${photoSelected.assets[0].type}/${fileExtension}`,
+        } as any;
+
+        setAvatarFile(photoFile);
+        setAvatar(photoFile.uri);
+      }
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Não foi possivel utilizar essa foto";
+
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+  }
+
+  async function handleCreateAccount({
+    email,
+    name,
+    tel,
+    password,
+  }: FormDataProps) {
+    try {
+      setIsLoading(true);
+
+      const userForm = new FormData();
+      userForm.append("avatar", avatarFile);
+      userForm.append("name", name);
+      userForm.append("tel", tel);
+      userForm.append("email", email);
+      userForm.append("password", password);
+
+      await api.post("/users", userForm, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Não foi possivel criar a conta. Tente novamente mais tarde!";
+
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
   return (
     <ScrollView style={{ flexGrow: 1 }}>
       <Container>
@@ -41,11 +205,11 @@ export function SignUp() {
             </Text>
             <VStack mt="$6" mb="$4">
               <UserPhoto
-                source={{ uri: "https://github.com/fabiano-bragaaa.png" }}
+                source={{ uri: avatar }}
                 alt="foto de perfil"
                 sizeImage={100}
               />
-              <Box
+              <Pressable
                 w={45}
                 h={45}
                 borderRadius="$full"
@@ -55,33 +219,94 @@ export function SignUp() {
                 left={70}
                 alignItems="center"
                 justifyContent="center"
+                onPress={handleUserPhotoSelected}
               >
                 <Icon as={PencilLine} color="$white" size="lg" />
-              </Box>
+              </Pressable>
             </VStack>
           </Center>
 
           <Center>
-            <Input placeholder="Nome" boxProps={{ mb: "$6" }} />
-            <Input placeholder="E-mail" boxProps={{ mb: "$6" }} />
-            <Input placeholder="Telefone" boxProps={{ mb: "$6" }} />
-            <Input
-              placeholder="Senha"
-              isPassword
-              onToggleSecurity={() => setIsToggle(!isToggle)}
-              toggleSecurity={isToggle}
-              secureTextEntry={isToggle}
-              boxProps={{ mb: "$6" }}
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Nome"
+                  value={value}
+                  onChangeText={onChange}
+                  errorMessage={errors.name?.message}
+                />
+              )}
             />
-            <Input
-              placeholder="Confirmar senha"
-              isPassword
-              onToggleSecurity={() => setIsToggle(!isToggle)}
-              toggleSecurity={isToggle}
-              secureTextEntry={isToggle}
-              boxProps={{ mb: "$8" }}
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="E-mail"
+                  value={value}
+                  onChangeText={onChange}
+                  errorMessage={errors.email?.message}
+                />
+              )}
             />
-            <Button title="Criar" type="secondary" />
+            <Controller
+              control={control}
+              name="tel"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Telefone"
+                  value={value}
+                  onChangeText={onChange}
+                  errorMessage={errors.tel?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Senha"
+                  isPassword
+                  onToggleSecurity={() =>
+                    setIsTogglePassword(!isTogglePassword)
+                  }
+                  toggleSecurity={isTogglePassword}
+                  secureTextEntry={isTogglePassword}
+                  value={value}
+                  onChangeText={onChange}
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password_confirm"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder="Confirmar senha"
+                  isPassword
+                  onToggleSecurity={() =>
+                    setIsTogglePasswordConfirm(!isTogglePasswordConfirm)
+                  }
+                  toggleSecurity={isTogglePasswordConfirm}
+                  secureTextEntry={isTogglePasswordConfirm}
+                  value={value}
+                  onChangeText={onChange}
+                  errorMessage={errors.password_confirm?.message}
+                />
+              )}
+            />
+
+            <Button
+              title="Criar"
+              type="secondary"
+              onPress={handleSubmit(handleCreateAccount)}
+              loading={isLoading}
+            />
           </Center>
         </Box>
         <Center paddingHorizontal="$10">
