@@ -1,7 +1,6 @@
 import { Container } from "@components/Container/Container";
 import { Input } from "@components/Input/Input";
 import {
-  Avatar,
   Box,
   Center,
   Icon,
@@ -13,7 +12,9 @@ import {
 } from "@gluestack-ui/themed";
 import { useState } from "react";
 
+import DefaultPhoto from "@assets/icons/Avatar.png";
 import Logo from "@assets/icons/logo.png";
+
 import { Button } from "@components/Button/Button";
 import { ScrollView } from "react-native";
 import { UserPhoto } from "@components/UserPhoto/UserPhoto";
@@ -30,6 +31,7 @@ import { Toast } from "@components/Toast/Toast";
 
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import { useAuth } from "@hooks/useAuth";
 
 type FormDataProps = {
   name: string;
@@ -58,14 +60,14 @@ export function SignUp() {
   const [isTogglePassword, setIsTogglePassword] = useState<boolean>(false);
   const [isTogglePasswordConfirm, setIsTogglePasswordConfirm] =
     useState<boolean>(false);
-  const [avatar, setAvatar] = useState(
-    "https://github.com/fabiano-bragaaa.png"
-  );
+  const [avatar, setAvatar] = useState<string>();
   const [avatarFile, setAvatarFile] = useState<any>();
 
   const toast = useToast();
 
   const { goBack } = useNavigation();
+  const { signIn } = useAuth();
+
   const {
     control,
     handleSubmit,
@@ -128,7 +130,7 @@ export function SignUp() {
         ? error.message
         : "Não foi possivel utilizar essa foto";
 
-      toast.show({
+      return toast.show({
         placement: "top",
         render: ({ id }) => (
           <Toast
@@ -163,20 +165,24 @@ export function SignUp() {
           "Content-Type": "multipart/form-data",
         },
       });
+
+      await signIn(email, password);
     } catch (error) {
       const isAppError = error instanceof AppError;
 
       const title = isAppError
         ? error.message
-        : "Não foi possivel criar a conta. Tente novamente mais tarde!";
+        : "Não foi possível criar a conta. Tente novamente mais tarde!";
 
-      toast.show({
+      return toast.show({
         placement: "top",
         render: ({ id }) => (
           <Toast
             id={id}
             action="error"
-            title={title}
+            title={
+              typeof title === "string" ? title : "Tente novamente mais tarde"
+            }
             onClose={() => toast.close(id)}
           />
         ),
@@ -205,7 +211,7 @@ export function SignUp() {
             </Text>
             <VStack mt="$6" mb="$4">
               <UserPhoto
-                source={{ uri: avatar }}
+                source={avatarFile ? { uri: avatar } : DefaultPhoto}
                 alt="foto de perfil"
                 sizeImage={100}
               />
