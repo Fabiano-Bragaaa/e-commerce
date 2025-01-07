@@ -1,11 +1,14 @@
 import { UserDTO } from "@dtos/UserDTO";
 import { api } from "@services/api";
-import { createContext, ReactNode, useState } from "react";
+import { storageUserGet, storageUserSave } from "@storage/storageUser";
+import { User } from "lucide-react-native";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 export type AuthContextDataProps = {
   user: UserDTO;
   setUser: (user: UserDTO) => void;
   signIn: (email: string, password: string) => Promise<void>;
+  loadingStorageUser: boolean;
 };
 
 type AuthContextProviderProps = {
@@ -18,6 +21,7 @@ export const AuthContext = createContext<AuthContextDataProps>(
 
 export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [user, setUser] = useState<UserDTO>({} as UserDTO);
+  const [loadingStorageUser, setLoadingStorageUser] = useState(true);
 
   async function signIn(email: string, password: string) {
     try {
@@ -25,15 +29,34 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
       if (data.user) {
         setUser(data.user);
+        storageUserSave(data.user);
       }
-      console.log(user);
     } catch (error) {
       throw error;
     }
   }
 
+  async function loadUserData() {
+    try {
+      const userData = await storageUserGet();
+
+      if (userData) {
+        setUser(userData);
+        setLoadingStorageUser(false);
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoadingStorageUser(false);
+    }
+  }
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, signIn, setUser }}>
+    <AuthContext.Provider value={{ user, signIn, setUser, loadingStorageUser }}>
       {children}
     </AuthContext.Provider>
   );

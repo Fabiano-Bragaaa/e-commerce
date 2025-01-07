@@ -32,6 +32,11 @@ import { Toast } from "@components/Toast/Toast";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useAuth } from "@hooks/useAuth";
+import {
+  formattedTel,
+  numberCleanTel,
+  validateTel,
+} from "@utils/validationNumber";
 
 type FormDataProps = {
   name: string;
@@ -44,7 +49,12 @@ type FormDataProps = {
 const signUpSchema = yup.object({
   name: yup.string().required("Informe o seu nome."),
   email: yup.string().required("Informe um e-mail.").email("E-mail invalido"),
-  tel: yup.string().required("Informe o seu numero de telefone."),
+  tel: yup
+    .string()
+    .required("Informe o seu numero de telefone.")
+    .test("Validar Telefone", "Telefone Inválido.", (value) =>
+      validateTel(value)
+    ),
   password: yup
     .string()
     .required("Informe a senha.")
@@ -66,7 +76,7 @@ export function SignUp() {
   const toast = useToast();
 
   const { goBack } = useNavigation();
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
 
   const {
     control,
@@ -115,7 +125,7 @@ export function SignUp() {
         const fileExtension = photoURI.split(".").pop();
 
         const photoFile = {
-          name: `nome-do-usuario.${fileExtension}`.toLocaleLowerCase(),
+          name: `${user.name}.${fileExtension}`.toLocaleLowerCase(),
           uri: photoURI,
           type: `${photoSelected.assets[0].type}/${fileExtension}`,
         } as any;
@@ -170,9 +180,7 @@ export function SignUp() {
     } catch (error) {
       const isAppError = error instanceof AppError;
 
-      const title = isAppError
-        ? error.message
-        : "Não foi possível criar a conta. Tente novamente mais tarde!";
+      const title = isAppError && error.message;
 
       return toast.show({
         placement: "top",
@@ -192,147 +200,141 @@ export function SignUp() {
     }
   }
   return (
-    <ScrollView style={{ flexGrow: 1 }}>
-      <Container>
-        <Box flex={1} paddingHorizontal="$10">
-          <Center mt="$10">
-            <Image source={Logo} alt="logo" w="$32" />
-            <Text mt="$4" color="$gray1" fontSize="$2xl" fontFamily="$heading">
-              Boas vindas!
-            </Text>
-            <Text
-              color="$gray4"
-              fontFamily="$heading"
-              fontSize="$sm"
-              textAlign="center"
-            >
-              Crie sua conta e use o espaço para comprar itens variados e vender
-              seus produtos
-            </Text>
-            <VStack mt="$6" mb="$4">
-              <UserPhoto
-                source={avatarFile ? { uri: avatar } : DefaultPhoto}
-                alt="foto de perfil"
-                sizeImage={100}
-              />
-              <Pressable
-                w={45}
-                h={45}
-                borderRadius="$full"
-                bg="$blueLight"
-                position="absolute"
-                top={55}
-                left={70}
-                alignItems="center"
-                justifyContent="center"
-                onPress={handleUserPhotoSelected}
-              >
-                <Icon as={PencilLine} color="$white" size="lg" />
-              </Pressable>
-            </VStack>
-          </Center>
-
-          <Center>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  placeholder="Nome"
-                  value={value}
-                  onChangeText={onChange}
-                  errorMessage={errors.name?.message}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  placeholder="E-mail"
-                  value={value}
-                  onChangeText={onChange}
-                  errorMessage={errors.email?.message}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="tel"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  placeholder="Telefone"
-                  value={value}
-                  onChangeText={onChange}
-                  errorMessage={errors.tel?.message}
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  placeholder="Senha"
-                  isPassword
-                  onToggleSecurity={() =>
-                    setIsTogglePassword(!isTogglePassword)
-                  }
-                  toggleSecurity={isTogglePassword}
-                  secureTextEntry={isTogglePassword}
-                  value={value}
-                  onChangeText={onChange}
-                  errorMessage={errors.password?.message}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="password_confirm"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  placeholder="Confirmar senha"
-                  isPassword
-                  onToggleSecurity={() =>
-                    setIsTogglePasswordConfirm(!isTogglePasswordConfirm)
-                  }
-                  toggleSecurity={isTogglePasswordConfirm}
-                  secureTextEntry={isTogglePasswordConfirm}
-                  value={value}
-                  onChangeText={onChange}
-                  errorMessage={errors.password_confirm?.message}
-                />
-              )}
-            />
-
-            <Button
-              title="Criar"
-              type="secondary"
-              onPress={handleSubmit(handleCreateAccount)}
-              loading={isLoading}
-            />
-          </Center>
-        </Box>
-        <Center paddingHorizontal="$10">
-          <Text
-            color="$gray2"
-            fontFamily="$body"
-            fontSize="$lg"
-            mt="$12"
-            mb="$4"
-          >
-            Já tem uma conta?
+    <Container scrollable>
+      <Box flex={1} paddingHorizontal="$10">
+        <Center mt="$10">
+          <Image source={Logo} alt="logo" w="$32" />
+          <Text mt="$4" color="$gray1" fontSize="$2xl" fontFamily="$heading">
+            Boas vindas!
           </Text>
+          <Text
+            color="$gray4"
+            fontFamily="$heading"
+            fontSize="$sm"
+            textAlign="center"
+          >
+            Crie sua conta e use o espaço para comprar itens variados e vender
+            seus produtos
+          </Text>
+          <VStack mt="$6" mb="$4">
+            <UserPhoto
+              source={avatarFile ? { uri: avatar } : DefaultPhoto}
+              alt="foto de perfil"
+              sizeImage={100}
+            />
+            <Pressable
+              w={45}
+              h={45}
+              borderRadius="$full"
+              bg="$blueLight"
+              position="absolute"
+              top={55}
+              left={70}
+              alignItems="center"
+              justifyContent="center"
+              onPress={handleUserPhotoSelected}
+            >
+              <Icon as={PencilLine} color="$white" size="lg" />
+            </Pressable>
+          </VStack>
+        </Center>
+
+        <Center>
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Nome"
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.name?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="E-mail"
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.email?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="tel"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Telefone"
+                value={formattedTel(value)}
+                onChangeText={(text) => {
+                  const textNumberTel = numberCleanTel(text);
+
+                  onChange(textNumberTel);
+                }}
+                errorMessage={errors.tel?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Senha"
+                isPassword
+                onToggleSecurity={() => setIsTogglePassword(!isTogglePassword)}
+                toggleSecurity={isTogglePassword}
+                secureTextEntry={isTogglePassword}
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="password_confirm"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Confirmar senha"
+                isPassword
+                onToggleSecurity={() =>
+                  setIsTogglePasswordConfirm(!isTogglePasswordConfirm)
+                }
+                toggleSecurity={isTogglePasswordConfirm}
+                secureTextEntry={isTogglePasswordConfirm}
+                value={value}
+                onChangeText={onChange}
+                errorMessage={errors.password_confirm?.message}
+              />
+            )}
+          />
+
           <Button
-            title="Ir para o login"
-            type="outiline"
-            mb="$16"
-            onPress={goBack}
+            title="Criar"
+            type="secondary"
+            onPress={handleSubmit(handleCreateAccount)}
+            loading={isLoading}
           />
         </Center>
-      </Container>
-    </ScrollView>
+      </Box>
+      <Center paddingHorizontal="$10">
+        <Text color="$gray2" fontFamily="$body" fontSize="$lg" mt="$12" mb="$4">
+          Já tem uma conta?
+        </Text>
+        <Button
+          title="Ir para o login"
+          type="outiline"
+          mb="$16"
+          onPress={goBack}
+        />
+      </Center>
+    </Container>
   );
 }

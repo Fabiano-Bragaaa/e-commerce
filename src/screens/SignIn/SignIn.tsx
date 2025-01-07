@@ -1,6 +1,6 @@
 import { Container } from "@components/Container/Container";
 import { Input } from "@components/Input/Input";
-import { Box, Center, Image, Text } from "@gluestack-ui/themed";
+import { Box, Center, Image, Text, useToast } from "@gluestack-ui/themed";
 import { useState } from "react";
 
 import Logo from "@assets/icons/logo.png";
@@ -11,6 +11,10 @@ import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
+import { useAuth } from "@hooks/useAuth";
+import { ScrollView } from "react-native";
+import { AppError } from "@utils/AppError";
+import { Toast } from "@components/Toast/Toast";
 
 type FormDataProps = {
   email: string;
@@ -30,6 +34,11 @@ const signInSchema = yup.object({
 
 export function SignIn() {
   const [isToggle, setIsToggle] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const toast = useToast();
+
+  const { signIn } = useAuth();
 
   const { navigate } = useNavigation<AuthNavigatorRoutesProps>();
 
@@ -41,14 +50,39 @@ export function SignIn() {
     resolver: yupResolver(signInSchema),
   });
 
-  function handleAccessYourAccount() {}
+  async function handleAccessYourAccount({ email, password }: FormDataProps) {
+    try {
+      setIsLoading(true);
+      await signIn(email, password);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError && error.message;
+
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="error"
+            title={
+              typeof title === "string" ? title : "Tente novamente mais tarde"
+            }
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   function handleSignUp() {
     navigate("signUp");
   }
 
   return (
-    <Container>
+    <Container scrollable>
       <Box flex={1} paddingHorizontal="$10">
         <Center mt="$20">
           <Image source={Logo} alt="logo" w="$32" />
@@ -99,6 +133,7 @@ export function SignIn() {
           />
           <Button
             title="Entrar"
+            loading={isLoading}
             onPress={handleSubmit(handleAccessYourAccount)}
           />
         </Center>
@@ -106,9 +141,11 @@ export function SignIn() {
       <Center
         bg="$white"
         h="25%"
+        width="100%"
         borderTopLeftRadius="$3xl"
         borderTopRightRadius="$3xl"
         paddingHorizontal="$10"
+        mt="$20"
       >
         <Text color="$gray2" fontFamily="$body" fontSize="$lg" mt="$12" mb="$4">
           Ainda não tem acesso?
