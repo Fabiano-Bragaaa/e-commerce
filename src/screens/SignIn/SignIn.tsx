@@ -12,7 +12,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { useAuth } from "@hooks/useAuth";
-import { ScrollView } from "react-native";
 import { AppError } from "@utils/AppError";
 import { Toast } from "@components/Toast/Toast";
 

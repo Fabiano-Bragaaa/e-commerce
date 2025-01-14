@@ -2,16 +2,20 @@ import {
   FormControl,
   FormControlErrorText,
   Input as GSInput,
+  HStack,
   Icon,
   InputField,
 } from "@gluestack-ui/themed";
 import { ComponentProps } from "react";
-import { EyeIcon, EyeOff } from "lucide-react-native";
+import { EyeIcon, EyeOff, Search, SlidersVertical } from "lucide-react-native";
 import { Pressable } from "react-native";
 import { FormControlError } from "@gluestack-ui/themed";
+import { Text } from "@gluestack-ui/themed";
 
 type InputProps = ComponentProps<typeof InputField> & {
+  isMoney?: boolean;
   isPassword?: boolean;
+  isSearch?: boolean;
   toggleSecurity?: boolean;
   onToggleSecurity?: () => void;
   errorMessage?: string | null;
@@ -21,6 +25,8 @@ type InputProps = ComponentProps<typeof InputField> & {
 
 export function Input({
   isPassword = false,
+  isSearch = false,
+  isMoney = false,
   toggleSecurity = false,
   onToggleSecurity,
   boxProps,
@@ -47,6 +53,11 @@ export function Input({
         $invalid={{ borderWidth: 1, borderColor: "$redLight" }}
         {...boxProps}
       >
+        {isMoney && (
+          <Text color="$gray1" fontFamily="$heading">
+            R$
+          </Text>
+        )}
         <InputField
           fontFamily="$body"
           p="$0"
@@ -64,6 +75,17 @@ export function Input({
               size="lg"
             />
           </Pressable>
+        )}
+        {isSearch && (
+          <HStack gap="$2">
+            <Pressable onPress={() => {}}>
+              <Icon as={Search} color="$gray1" size="lg" />
+            </Pressable>
+            <Text color="$gray4">|</Text>
+            <Pressable onPress={() => {}}>
+              <Icon as={SlidersVertical} color="$gray1" size="lg" />
+            </Pressable>
+          </HStack>
         )}
       </GSInput>
       <FormControlError>

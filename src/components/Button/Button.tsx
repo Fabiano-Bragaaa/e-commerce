@@ -9,7 +9,7 @@ type Props = ComponentProps<typeof GSButton> & {
   title: string;
   loading?: boolean;
   type?: "primary" | "secondary" | "outiline";
-  sizeButton?: "large" | "small";
+  sizeButton?: "large" | "small" | "fine";
 };
 
 export function Button({
@@ -28,9 +28,15 @@ export function Button({
           ? "$gray1"
           : "$gray5"
       }
-      w={sizeButton === "large" ? "$full" : "50%"}
+      w={
+        sizeButton === "large"
+          ? "$full"
+          : sizeButton === "small"
+          ? "45%"
+          : "48%"
+      }
       {...gsButton}
-      h={55}
+      h={sizeButton === "large" || sizeButton === "small" ? 55 : 45}
     >
       {loading ? (
         <ButtonSpinner color={type === "outiline" ? "$gray1" : "$white"} />
