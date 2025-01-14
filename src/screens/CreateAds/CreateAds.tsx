@@ -213,7 +213,16 @@ export function CreateAds() {
           value={checkbox}
           setValues={(key: string[]) => setCheckbox(key)}
         />
-        <HStack alignItems="center" justifyContent="center" gap="$4" my="$5">
+        <HStack
+          h={90}
+          bg="$white"
+          alignItems="center"
+          justifyContent="center"
+          gap="$4"
+          mt="$5"
+          p="$4"
+          mx="-$6"
+        >
           <Button title="Cancelar" type="outiline" sizeButton="fine" />
           <Button title="Avançar" type="secondary" sizeButton="fine" />
         </HStack>
