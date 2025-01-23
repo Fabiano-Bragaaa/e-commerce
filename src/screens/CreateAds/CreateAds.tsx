@@ -22,6 +22,10 @@ import {
 
 import { AppError } from "@utils/AppError";
 
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+
 import * as ImagePicker from "expo-image-picker";
 import { X } from "lucide-react-native";
 import { useState } from "react";
@@ -30,10 +34,26 @@ import { TextArea } from "@components/TextArea/TextArea";
 import { gluestackUIConfig } from "../../../config/gluestack-ui.config";
 import { Checkbox } from "@components/Checkbox/Checkbox";
 import { Button } from "@components/Button/Button";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigatorRoutesdProps } from "@routes/app.routes";
+import { cleanCurrency, formatCurrency } from "@utils/validationValueProduct";
+
+type FormDataProps = {
+  product_title: string;
+  description_title: string;
+  value_product: string;
+};
+
+const productSchema = yup.object({
+  product_title: yup.string().required("Informe o titulo do produto."),
+  description_title: yup.string().required("Informe a descrição do produto."),
+  value_product: yup.string().required("Informe o valor do produto."),
+});
 
 export function CreateAds() {
   const theme = gluestackUIConfig.tokens;
   const color = theme.colors;
+  const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
 
   const [images, setImages] = useState<string[]>([]);
 
@@ -42,6 +62,14 @@ export function CreateAds() {
   const [checkbox, setCheckbox] = useState<string[]>([]);
 
   const toast = useToast();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    resolver: yupResolver(productSchema),
+  });
 
   async function SelectedAds() {
     try {
@@ -116,6 +144,49 @@ export function CreateAds() {
     setImages((prev) => prev.filter((item) => item !== uri));
   }
 
+  function handleConfirmForm({
+    description_title,
+    product_title,
+    value_product,
+  }: FormDataProps) {
+    if (images.length === 0) {
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="error"
+            title={"Insira pelo menos uma imagem do seu produto"}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+
+    if (checkbox.length === 0) {
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="error"
+            title={"Insira pelo menos um meio de pagamento"}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+
+    navigate("previewAds", {
+      checkbox,
+      description_title,
+      images,
+      product_title,
+      switchValue,
+      value_product,
+    });
+  }
+
   return (
     <VStack flex={1}>
       <Container
@@ -163,8 +234,33 @@ export function CreateAds() {
         <Text color="$gray1" fontFamily="$heading">
           Sobre o produto
         </Text>
-        <Input placeholder="Título do anúncio" boxProps={{ mt: "$4" }} />
-        <TextArea placeholder="Descrição do produto" />
+        <Controller
+          control={control}
+          name="product_title"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              placeholder="Título do anúncio"
+              boxProps={{ mt: "$4" }}
+              value={value}
+              onChangeText={onChange}
+              errorMessage={errors.product_title?.message}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="description_title"
+          render={({ field: { onChange, value } }) => (
+            <TextArea
+              placeholder="Descrição do produto"
+              value={value}
+              onChangeText={onChange}
+              errorMessage={errors.description_title?.message}
+            />
+          )}
+        />
+
         <RadioGroup
           flexDirection="row"
           value={selectedOption}
@@ -187,14 +283,29 @@ export function CreateAds() {
             </RadioLabel>
           </Radio>
         </RadioGroup>
+
         <Text mt="$6" color="$gray1" fontFamily="$heading">
           Venda
         </Text>
-        <Input
-          boxProps={{ mt: "$4", mb: "$1" }}
-          isMoney
-          placeholder="Valor do produto"
+
+        <Controller
+          control={control}
+          name="value_product"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              boxProps={{ mt: "$4", mb: "$1" }}
+              isMoney
+              placeholder="Valor do produto"
+              value={formatCurrency(value || "")}
+              onChangeText={(text) => {
+                const cleanValue = cleanCurrency(text);
+                onChange(cleanValue);
+              }}
+              errorMessage={errors.value_product?.message}
+            />
+          )}
         />
+
         <Text color="$gray1" fontFamily="$heading">
           Aceita troca?
         </Text>
@@ -224,7 +335,12 @@ export function CreateAds() {
           mx="-$6"
         >
           <Button title="Cancelar" type="outiline" sizeButton="fine" />
-          <Button title="Avançar" type="secondary" sizeButton="fine" />
+          <Button
+            title="Avançar"
+            type="secondary"
+            sizeButton="fine"
+            onPress={handleSubmit(handleConfirmForm)}
+          />
         </HStack>
       </Container>
     </VStack>
