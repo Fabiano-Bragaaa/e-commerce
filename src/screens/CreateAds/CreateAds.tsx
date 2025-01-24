@@ -295,6 +295,7 @@ export function CreateAds() {
             <Input
               boxProps={{ mt: "$4", mb: "$1" }}
               isMoney
+              keyboardType="numeric"
               placeholder="Valor do produto"
               value={formatCurrency(value || "")}
               onChangeText={(text) => {
