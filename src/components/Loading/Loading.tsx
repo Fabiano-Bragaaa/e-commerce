@@ -3,10 +3,10 @@ import { Center, Spinner } from "@gluestack-ui/themed";
 
 export function Loading() {
   return (
-    <Container>
-      <Center flex={1}>
+    <Center flex={1}>
+      <Container>
         <Spinner color="$blue" size="large" />
-      </Center>
-    </Container>
+      </Container>
+    </Center>
   );
 }

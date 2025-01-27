@@ -105,6 +105,8 @@ export function CreateAds() {
 
         setImages(uris);
 
+        console.log(uris);
+
         const fileExtension = photos.map((photo) => {
           const photoUri = photo.uri;
 
