@@ -186,6 +186,7 @@ export function CreateAds() {
       product_title,
       switchValue,
       value_product,
+      selectedOption,
     });
   }
 

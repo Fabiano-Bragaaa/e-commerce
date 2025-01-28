@@ -34,19 +34,19 @@ export function Checkbox({ value, setValues }: Props) {
           </CheckboxIndicator>
           <CheckboxLabel ml="$3">Pix</CheckboxLabel>
         </GSCheckbox>
-        <GSCheckbox value="cache">
+        <GSCheckbox value="cash">
           <CheckboxIndicator>
             <CheckboxIcon as={CheckIcon} color="$white" />
           </CheckboxIndicator>
           <CheckboxLabel ml="$3">Dinheiro</CheckboxLabel>
         </GSCheckbox>
-        <GSCheckbox value="credito">
+        <GSCheckbox value="card">
           <CheckboxIndicator>
             <CheckboxIcon as={CheckIcon} color="$white" />
           </CheckboxIndicator>
           <CheckboxLabel ml="$3">Cartão de Crédito</CheckboxLabel>
         </GSCheckbox>
-        <GSCheckbox value="deposito">
+        <GSCheckbox value="deposit">
           <CheckboxIndicator>
             <CheckboxIcon as={CheckIcon} color="$white" />
           </CheckboxIndicator>

@@ -20,6 +20,7 @@ export type AppRoutes = {
     value_product: string;
     switchValue: boolean;
     checkbox: string[];
+    selectedOption: string;
   };
 };
 

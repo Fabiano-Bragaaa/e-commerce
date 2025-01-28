@@ -1,3 +1,4 @@
+import { UsedOrNew } from "@components/UsedOrNew/UsedOrNew";
 import { UserPhoto } from "@components/UserPhoto/UserPhoto";
 import { Box, Center, HStack, Image, Text, VStack } from "@gluestack-ui/themed";
 import { useAuth } from "@hooks/useAuth";
@@ -34,11 +35,7 @@ export function Ads() {
           isUser
         />
 
-        <Center bg="$blue" rounded="$2xl" w="$20" height="$8">
-          <Text textTransform="uppercase" color="$white" fontFamily="$heading">
-            usado
-          </Text>
-        </Center>
+        <UsedOrNew isUsed={true} />
       </HStack>
       <Text color="$gray2" fontSize="$lg" mt="$3" mb="$1">
         Tenis vermelho
