@@ -34,8 +34,8 @@ import { TextArea } from "@components/TextArea/TextArea";
 import { gluestackUIConfig } from "../../../config/gluestack-ui.config";
 import { Checkbox } from "@components/Checkbox/Checkbox";
 import { Button } from "@components/Button/Button";
-import { useNavigation } from "@react-navigation/native";
-import { AppNavigatorRoutesdProps } from "@routes/app.routes";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { AppNavigatorRoutesdProps, AppRoutes } from "@routes/app.routes";
 import { cleanCurrency, formatCurrency } from "@utils/validationValueProduct";
 
 type FormDataProps = {
@@ -55,11 +55,17 @@ export function CreateAds() {
   const color = theme.colors;
   const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
 
-  const [images, setImages] = useState<string[]>([]);
+  const route = useRoute<RouteProp<AppRoutes, "createAds">>();
 
-  const [selectedOption, setSelectedOption] = useState<string>("new_product");
-  const [switchValue, setSwitchValue] = useState<boolean>(false);
-  const [checkbox, setCheckbox] = useState<string[]>([]);
+  const data = route.params;
+
+  const [images, setImages] = useState<string[]>(data.images);
+
+  const [selectedOption, setSelectedOption] = useState<string>(
+    data.selectedOption
+  );
+  const [switchValue, setSwitchValue] = useState<boolean>(data.switchValue);
+  const [checkbox, setCheckbox] = useState<string[]>(data.checkbox);
 
   const toast = useToast();
 
@@ -69,6 +75,11 @@ export function CreateAds() {
     formState: { errors },
   } = useForm<FormDataProps>({
     resolver: yupResolver(productSchema),
+    defaultValues: {
+      description_title: data.description_title,
+      product_title: data.product_title,
+      value_product: data.value_product,
+    },
   });
 
   async function SelectedAds() {

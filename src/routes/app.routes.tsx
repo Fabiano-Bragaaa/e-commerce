@@ -12,7 +12,15 @@ export type AppRoutes = {
     screen: keyof BottomTabParamList;
     params?: BottomTabParamList[keyof BottomTabParamList];
   };
-  createAds: undefined;
+  createAds: {
+    images: string[];
+    product_title: string;
+    description_title: string;
+    value_product: string;
+    switchValue: boolean;
+    checkbox: string[];
+    selectedOption: string;
+  };
   previewAds: {
     images: string[];
     product_title: string;

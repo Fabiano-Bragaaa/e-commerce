@@ -1,13 +1,17 @@
+import React from "react";
+
 import {
   Button as GSButton,
   ButtonText,
   ButtonSpinner,
+  Box,
 } from "@gluestack-ui/themed";
-import { ComponentProps } from "react";
+import { ComponentProps, ReactNode } from "react";
 
 type Props = ComponentProps<typeof GSButton> & {
   title: string;
   loading?: boolean;
+  Icon?: ReactNode;
   type?: "primary" | "secondary" | "outiline";
   sizeButton?: "large" | "small" | "fine";
 };
@@ -15,6 +19,7 @@ type Props = ComponentProps<typeof GSButton> & {
 export function Button({
   title,
   loading = false,
+  Icon,
   type = "primary",
   sizeButton = "large",
   ...gsButton
@@ -38,6 +43,7 @@ export function Button({
       {...gsButton}
       h={sizeButton === "large" || sizeButton === "small" ? 55 : 45}
     >
+      {Icon && !loading && <Box mr="$2">{Icon}</Box>}
       {loading ? (
         <ButtonSpinner color={type === "outiline" ? "$gray1" : "$white"} />
       ) : (

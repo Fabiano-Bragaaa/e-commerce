@@ -3,4 +3,7 @@ export type UserDTO = {
   name: string;
   email: string;
   avatar: string;
+  tel: string;
+  created_at: string;
+  updated_at: string;
 };

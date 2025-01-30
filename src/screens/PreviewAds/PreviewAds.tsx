@@ -1,13 +1,26 @@
+import { Button } from "@components/Button/Button";
 import { Container } from "@components/Container/Container";
+import { Toast } from "@components/Toast/Toast";
 import { UsedOrNew } from "@components/UsedOrNew/UsedOrNew";
 import { UserPhoto } from "@components/UserPhoto/UserPhoto";
-import { Box, Center, HStack, Image, Text, VStack } from "@gluestack-ui/themed";
+import {
+  Box,
+  Center,
+  HStack,
+  Icon,
+  Image,
+  Text,
+  useToast,
+  VStack,
+} from "@gluestack-ui/themed";
 import { useAuth } from "@hooks/useAuth";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { AppRoutes } from "@routes/app.routes";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { AppNavigatorRoutesdProps, AppRoutes } from "@routes/app.routes";
 import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
 import { GeneratePaymentMethods } from "@utils/generatePaymentMethods";
-import { formatCurrency } from "@utils/validationValueProduct";
+import { cleanCurrency, formatCurrency } from "@utils/validationValueProduct";
+import { ArrowLeft, Tag } from "lucide-react-native";
 import { Dimensions, ScrollView } from "react-native";
 
 import Carousel from "react-native-reanimated-carousel";
@@ -16,6 +29,10 @@ const { width, height } = Dimensions.get("window");
 
 export function PreviewAds() {
   const route = useRoute<RouteProp<AppRoutes, "previewAds">>();
+  const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
+
+  const toast = useToast();
+
   const { user } = useAuth();
 
   const {
@@ -28,21 +45,66 @@ export function PreviewAds() {
     selectedOption,
   } = route.params;
 
+  function handleEdit() {
+    navigate("createAds", {
+      checkbox,
+      description_title,
+      images,
+      product_title,
+      selectedOption,
+      switchValue,
+      value_product,
+    });
+  }
+
   console.log(
-    checkbox,
-    description_title,
-    images,
     product_title,
+    description_title,
+    selectedOption,
+    value_product,
     switchValue,
-    value_product
+    checkbox
   );
 
+  async function handleCreateProduct() {
+    try {
+      const { data } = await api.post("/product/", {
+        name: product_title,
+        description_title: description_title,
+        is_new: selectedOption === "new_product" ? true : false,
+        price: cleanCurrency(value_product),
+        accept_trade: switchValue,
+        payment_methods: [checkbox],
+      });
+
+      console.log("sucesso ao cadastrar", data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError && error.message;
+
+      return toast.show({
+        placement: "top",
+        render: ({ id }: { id: string }) => (
+          <Toast
+            id={id}
+            action="error"
+            title={
+              typeof title === "string" ? title : "Erro ao criar o produto"
+            }
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    }
+  }
+
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <VStack flex={1}>
+    <VStack flex={1}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: height * 0.12 }}
+        showsVerticalScrollIndicator={false}
+      >
         <Center gap="$1" h={"17%"} bg="$blueLight">
           <Text color="$white" fontSize="$lg" fontWeight="$bold">
             Pré visualização do anúncio
@@ -128,7 +190,31 @@ export function PreviewAds() {
             <GeneratePaymentMethods paymentMethods={checkbox} />
           </VStack>
         </Container>
-      </VStack>
-    </ScrollView>
+        <HStack
+          alignItems="center"
+          justifyContent="center"
+          gap={"$4"}
+          w="$full"
+          position="absolute"
+          bottom={1}
+          h={"12%"}
+          bg="$white"
+        >
+          <Button
+            onPress={handleEdit}
+            Icon={<Icon as={ArrowLeft} color="$gray2" size="lg" />}
+            title="Voltar e editar"
+            type="outiline"
+            sizeButton="small"
+          />
+          <Button
+            onPress={handleCreateProduct}
+            Icon={<Icon as={Tag} color="$gray6" size="lg" />}
+            title="Publicar"
+            sizeButton="small"
+          />
+        </HStack>
+      </ScrollView>
+    </VStack>
   );
 }

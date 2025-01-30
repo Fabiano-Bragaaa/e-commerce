@@ -13,7 +13,15 @@ export function HeaderHome() {
   const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
 
   function navigateToCreateAds() {
-    navigate("createAds");
+    navigate("createAds", {
+      checkbox: [],
+      description_title: "",
+      images: [],
+      product_title: "",
+      selectedOption: "new_product",
+      switchValue: false,
+      value_product: "",
+    });
   }
 
   return (
