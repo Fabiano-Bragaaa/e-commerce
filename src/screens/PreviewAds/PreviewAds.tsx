@@ -45,6 +45,16 @@ export function PreviewAds() {
     selectedOption,
   } = route.params;
 
+  console.log(
+    checkbox,
+    description_title,
+    images,
+    product_title,
+    switchValue,
+    value_product,
+    selectedOption
+  );
+
   function handleEdit() {
     navigate("createAds", {
       checkbox,
@@ -57,27 +67,25 @@ export function PreviewAds() {
     });
   }
 
-  console.log(
-    product_title,
-    description_title,
-    selectedOption,
-    value_product,
-    switchValue,
-    checkbox
-  );
+  console.log("imagens ===>", images);
 
   async function handleCreateProduct() {
     try {
-      const { data } = await api.post("/product/", {
+      const { data } = await api.post("/products/", {
         name: product_title,
-        description_title: description_title,
+        description: description_title,
         is_new: selectedOption === "new_product" ? true : false,
-        price: cleanCurrency(value_product),
+        price: Number(cleanCurrency(value_product)),
         accept_trade: switchValue,
-        payment_methods: [checkbox],
+        payment_methods: checkbox,
       });
 
-      console.log("sucesso ao cadastrar", data);
+      await api.post("/products/images/", {
+        product_id: data.id,
+        images,
+      });
+
+      console.log("produto cadastrado", data);
     } catch (error) {
       const isAppError = error instanceof AppError;
 

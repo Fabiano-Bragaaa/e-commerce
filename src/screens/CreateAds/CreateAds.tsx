@@ -117,20 +117,6 @@ export function CreateAds() {
         setImages(uris);
 
         console.log(uris);
-
-        const fileExtension = photos.map((photo) => {
-          const photoUri = photo.uri;
-
-          const fileExtension = photoUri.split(".").pop();
-
-          return {
-            name: `usuario.${fileExtension}`.toLowerCase(),
-            uri: photoUri,
-            type: `${photo.type}/${fileExtension}`,
-          } as any;
-        });
-
-        console.log(fileExtension);
       }
     } catch (error) {
       const isAppError = error instanceof AppError;
