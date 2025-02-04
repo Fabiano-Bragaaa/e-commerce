@@ -21,6 +21,7 @@ import { AppError } from "@utils/AppError";
 import { GeneratePaymentMethods } from "@utils/generatePaymentMethods";
 import { cleanCurrency, formatCurrency } from "@utils/validationValueProduct";
 import { ArrowLeft, Tag } from "lucide-react-native";
+import { useState } from "react";
 import { Dimensions, ScrollView } from "react-native";
 
 import Carousel from "react-native-reanimated-carousel";
@@ -28,6 +29,8 @@ import Carousel from "react-native-reanimated-carousel";
 const { width, height } = Dimensions.get("window");
 
 export function PreviewAds() {
+  const [loadingData, setLoadingData] = useState<boolean>(false);
+
   const route = useRoute<RouteProp<AppRoutes, "previewAds">>();
   const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
 
@@ -45,16 +48,6 @@ export function PreviewAds() {
     selectedOption,
   } = route.params;
 
-  console.log(
-    checkbox,
-    description_title,
-    images,
-    product_title,
-    switchValue,
-    value_product,
-    selectedOption
-  );
-
   function handleEdit() {
     navigate("createAds", {
       checkbox,
@@ -67,10 +60,9 @@ export function PreviewAds() {
     });
   }
 
-  console.log("imagens ===>", images);
-
   async function handleCreateProduct() {
     try {
+      setLoadingData(true);
       const { data } = await api.post("/products/", {
         name: product_title,
         description: description_title,
@@ -80,12 +72,38 @@ export function PreviewAds() {
         payment_methods: checkbox,
       });
 
-      await api.post("/products/images/", {
-        product_id: data.id,
-        images,
+      const imageData = new FormData();
+
+      images.forEach((item) => {
+        const imageFile = {
+          ...item,
+          name: user.name + "." + item.name,
+        } as any;
+
+        imageData.append("images", imageFile);
       });
 
-      console.log("produto cadastrado", data);
+      imageData.append("product_id", data.id);
+
+      await api.post("/products/images", imageData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      navigate("bottomTabs", { screen: "home" });
+
+      toast.show({
+        placement: "top",
+        render: ({ id }: { id: string }) => (
+          <Toast
+            id={id}
+            action="success"
+            title={"Produto criado com sucesso"}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
     } catch (error) {
       const isAppError = error instanceof AppError;
 
@@ -104,6 +122,8 @@ export function PreviewAds() {
           />
         ),
       });
+    } finally {
+      setLoadingData(false);
     }
   }
 
@@ -133,7 +153,7 @@ export function PreviewAds() {
                 w="$full"
                 h="$full"
                 resizeMode="cover"
-                source={{ uri: item }}
+                source={{ uri: item.uri }}
               />
             )}
           />
@@ -216,6 +236,7 @@ export function PreviewAds() {
             sizeButton="small"
           />
           <Button
+            loading={loadingData}
             onPress={handleCreateProduct}
             Icon={<Icon as={Tag} color="$gray6" size="lg" />}
             title="Publicar"

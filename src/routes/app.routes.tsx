@@ -6,6 +6,7 @@ import { BottomTabParamList, BottomTabRoutes } from "./bottomTab.routes";
 
 import { CreateAds } from "@screens/CreateAds/CreateAds";
 import { PreviewAds } from "@screens/PreviewAds/PreviewAds";
+import { ProductImageDTO } from "@dtos/ProductImageDTO";
 
 export type AppRoutes = {
   bottomTabs: {
@@ -13,7 +14,7 @@ export type AppRoutes = {
     params?: BottomTabParamList[keyof BottomTabParamList];
   };
   createAds: {
-    images: string[];
+    images: ProductImageDTO[];
     product_title: string;
     description_title: string;
     value_product: string;
@@ -22,7 +23,7 @@ export type AppRoutes = {
     selectedOption: string;
   };
   previewAds: {
-    images: string[];
+    images: ProductImageDTO[];
     product_title: string;
     description_title: string;
     value_product: string;

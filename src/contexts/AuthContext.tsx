@@ -60,6 +60,9 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     try {
       setLoadingStorageUser(true);
       await storageUserSave(userData);
+
+      console.log("verificando o refresh", refresh_token);
+
       await storageTokenSave({ token, refresh_token });
     } catch (error) {
       throw error;
@@ -79,8 +82,6 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
           data.refresh_token
         );
         setUser(data.user);
-
-        console.log(data.refresh_token);
       }
     } catch (error) {
       throw error;
@@ -91,7 +92,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     try {
       setLoadingStorageUser(true);
       const userData = await storageUserGet();
-      const { token } = await storageTokenGet();
+      const { token, refresh_token } = await storageTokenGet();
+
+      console.log("token ======>", token);
+      console.log("refresh_token ======>", refresh_token);
 
       if (token && userData) {
         userAndTokenUpdate(userData, token);

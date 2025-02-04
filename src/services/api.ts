@@ -32,6 +32,8 @@ api.registerInterceptTokenManager = (signOut) => {
         ) {
           const { refresh_token } = await storageTokenGet();
 
+          console.log("refresh_token ===>", refresh_token);
+
           if (!refresh_token) {
             signOut();
             return Promise.reject(requestError);

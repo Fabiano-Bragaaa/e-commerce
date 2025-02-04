@@ -26,7 +26,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 
+import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
+
 import { X } from "lucide-react-native";
 import { useState } from "react";
 import { Input } from "@components/Input/Input";
@@ -37,6 +39,7 @@ import { Button } from "@components/Button/Button";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { AppNavigatorRoutesdProps, AppRoutes } from "@routes/app.routes";
 import { cleanCurrency, formatCurrency } from "@utils/validationValueProduct";
+import { ProductImageDTO } from "@dtos/ProductImageDTO";
 
 type FormDataProps = {
   product_title: string;
@@ -59,7 +62,7 @@ export function CreateAds() {
 
   const data = route.params;
 
-  const [images, setImages] = useState<string[]>(data.images);
+  const [images, setImages] = useState<ProductImageDTO[]>(data.images);
 
   const [selectedOption, setSelectedOption] = useState<string>(
     data.selectedOption
@@ -84,39 +87,29 @@ export function CreateAds() {
 
   async function SelectedAds() {
     try {
-      const photosSelectes = await ImagePicker.launchImageLibraryAsync({
+      const photosSelected = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
         quality: 1,
-        allowsMultipleSelection: true,
+        aspect: [4, 4],
+        allowsEditing: true,
       });
 
-      if (photosSelectes.canceled) {
+      if (photosSelected.canceled) {
         return;
       }
 
-      const photos = photosSelectes.assets;
+      if (photosSelected.assets[0].uri) {
+        const fileExtension = photosSelected.assets[0].uri.split(".").pop();
 
-      if (photos.length > 3) {
-        return toast.show({
-          duration: 4000,
-          placement: "top",
-          render: ({ id }) => (
-            <Toast
-              title="Escolha somente 3 imagens do seu produto."
-              action="error"
-              id={id}
-              onClose={() => toast.close(id)}
-            />
-          ),
-        });
-      }
+        const uri = photosSelected.assets[0].uri;
 
-      if (photos) {
-        const uris = photos.map((photos) => photos.uri);
+        const photoFile = {
+          name: `${fileExtension}`.toLowerCase(),
+          uri,
+          type: `${photosSelected.assets[0].type}/${fileExtension}`,
+        } as any;
 
-        setImages(uris);
-
-        console.log(uris);
+        setImages((images) => [...images, photoFile]);
       }
     } catch (error) {
       const isAppError = error instanceof AppError;
@@ -140,7 +133,7 @@ export function CreateAds() {
   }
 
   function removeItem(uri: string) {
-    setImages((prev) => prev.filter((item) => item !== uri));
+    setImages((prev) => prev.filter((item) => item.uri !== uri));
   }
 
   function handleConfirmForm({
@@ -203,10 +196,10 @@ export function CreateAds() {
         </Text>
         <HStack gap="$2" mt="$4" mb="$6">
           {images.length > 0 &&
-            images.map((uri) => (
-              <Box key={uri}>
+            images.map((imageData) => (
+              <Box key={imageData.uri}>
                 <Image
-                  source={{ uri }}
+                  source={{ uri: imageData.uri }}
                   alt="imagem do produto"
                   w="$24"
                   h="$24"
@@ -223,7 +216,7 @@ export function CreateAds() {
                   h="$6"
                   top={4}
                   right={4}
-                  onPress={() => removeItem(uri)}
+                  onPress={() => removeItem(imageData.uri)}
                 >
                   <Icon as={X} color="$white" size="lg" />
                 </Pressable>
