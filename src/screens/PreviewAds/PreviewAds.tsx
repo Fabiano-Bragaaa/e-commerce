@@ -3,6 +3,7 @@ import { Container } from "@components/Container/Container";
 import { Toast } from "@components/Toast/Toast";
 import { UsedOrNew } from "@components/UsedOrNew/UsedOrNew";
 import { UserPhoto } from "@components/UserPhoto/UserPhoto";
+import { ProductImageDTO } from "@dtos/ProductImageDTO";
 import {
   Box,
   Center,
@@ -30,6 +31,7 @@ const { width, height } = Dimensions.get("window");
 
 export function PreviewAds() {
   const [loadingData, setLoadingData] = useState<boolean>(false);
+  const [imagesData, setImagesData] = useState<ProductImageDTO>();
 
   const route = useRoute<RouteProp<AppRoutes, "previewAds">>();
   const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
@@ -46,6 +48,7 @@ export function PreviewAds() {
     switchValue,
     value_product,
     selectedOption,
+    idProductExist,
   } = route.params;
 
   function handleEdit() {
@@ -57,6 +60,7 @@ export function PreviewAds() {
       selectedOption,
       switchValue,
       value_product,
+      editable: true,
     });
   }
 
@@ -142,7 +146,7 @@ export function PreviewAds() {
           </Text>
         </Center>
 
-        <Box flex={1} maxHeight={height * 0.3}>
+        <Box flex={1}>
           <Carousel
             loop={false}
             width={width}
@@ -153,7 +157,13 @@ export function PreviewAds() {
                 w="$full"
                 h="$full"
                 resizeMode="cover"
-                source={{ uri: item.uri }}
+                source={
+                  idProductExist
+                    ? {
+                        uri: `${api.defaults.baseURL}/images/${item.path}`,
+                      }
+                    : { uri: item.uri }
+                }
               />
             )}
           />

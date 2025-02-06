@@ -9,17 +9,13 @@ type Props = ComponentProps<typeof Center> & {
 export function UsedOrNew({ isViewAds = false, isUsed, ...rest }: Props) {
   return (
     <Center
-      bg={isUsed ? "$blue" : "$gray5"}
+      bg={isUsed ? "$blue" : "$gray1"}
       rounded="$2xl"
-      w={isViewAds ? "$16" : "$20"}
-      height="$8"
+      w={"$16"}
+      height="$6"
       {...rest}
     >
-      <Text
-        textTransform="uppercase"
-        color={isUsed ? "$white" : "$gray1"}
-        fontFamily="$heading"
-      >
+      <Text textTransform="uppercase" color={"$white"} fontFamily="$heading">
         {isUsed ? "novo" : "usado"}
       </Text>
     </Center>

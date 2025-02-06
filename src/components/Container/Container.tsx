@@ -14,6 +14,7 @@ import {
 } from "./components/ScreenContainer";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { ArrowLeft, BookCheck } from "lucide-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 type ContainerProps = {
   children: ReactNode;
@@ -21,9 +22,11 @@ type ContainerProps = {
   titleBack?: string;
   boxProps?: ComponentProps<typeof Box>;
   scrollable?: boolean;
+  navigateTo?: () => void;
 };
 
 export function Container({
+  navigateTo,
   children,
   boxProps,
   canGoBack = false,
@@ -40,7 +43,7 @@ export function Container({
         <Box pb={bottom} pt={top} backgroundColor="$gray6" {...boxProps}>
           {canGoBack && (
             <HStack alignItems="center" my="$6">
-              <Pressable>
+              <Pressable onPress={navigateTo}>
                 <Icon as={ArrowLeft} color="$gray2" size="xl" />
               </Pressable>
 

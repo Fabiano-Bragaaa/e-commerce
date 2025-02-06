@@ -3,4 +3,5 @@ export type ProductImageDTO = {
   uri: string;
   type: string;
   id: string;
+  path: string;
 };

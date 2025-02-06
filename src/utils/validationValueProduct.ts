@@ -6,12 +6,13 @@ export function cleanCurrency(value: string): string {
   }
 }
 
-export function formatCurrency(value: string): string {
-  const cleanValue = cleanCurrency(value);
+export function formatCurrency(value: string | number): string {
+  const stringValue = typeof value === "number" ? value.toString() : value;
+
+  const cleanValue = cleanCurrency(stringValue);
 
   if (cleanValue === "") return "";
 
-  // Converte o valor para número corretamente
   const numberValue = Number(cleanValue) || 0;
 
   return (numberValue / 100).toLocaleString("pt-BR", {

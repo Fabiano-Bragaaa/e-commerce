@@ -7,6 +7,7 @@ import { BottomTabParamList, BottomTabRoutes } from "./bottomTab.routes";
 import { CreateAds } from "@screens/CreateAds/CreateAds";
 import { PreviewAds } from "@screens/PreviewAds/PreviewAds";
 import { ProductImageDTO } from "@dtos/ProductImageDTO";
+import { MyAd } from "@screens/MyAd/MyAd";
 
 export type AppRoutes = {
   bottomTabs: {
@@ -21,6 +22,8 @@ export type AppRoutes = {
     switchValue: boolean;
     checkbox: string[];
     selectedOption: string;
+    editable: boolean;
+    idProductExist?: string;
   };
   previewAds: {
     images: ProductImageDTO[];
@@ -30,6 +33,10 @@ export type AppRoutes = {
     switchValue: boolean;
     checkbox: string[];
     selectedOption: string;
+    idProductExist?: string;
+  };
+  myAd: {
+    id: string;
   };
 };
 
@@ -43,6 +50,7 @@ export function AppRoutes() {
       <Screen name="bottomTabs" component={BottomTabRoutes} />
       <Screen name="createAds" component={CreateAds} />
       <Screen name="previewAds" component={PreviewAds} />
+      <Screen name="myAd" component={MyAd} />
     </Navigator>
   );
 }

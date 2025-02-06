@@ -63,7 +63,15 @@ export function Home() {
         data={product}
         keyExtractor={(item) => item}
         style={{ width: "100%" }}
-        renderItem={({}) => <Ads />}
+        renderItem={({}) => (
+          <Ads
+            isUsed
+            userPhoto
+            price={5990}
+            title="Tenis vermelho"
+            uri="https://preview.redd.it/so-musashi-is-a-big-strong-mf-any-more-examples-of-that-v0-5val7s82ajmb1.jpg?width=728&format=pjpg&auto=webp&s=00dd2b2890865d5bdce627b8b88c74463f938978"
+          />
+        )}
         showsVerticalScrollIndicator={false}
         numColumns={2}
       />

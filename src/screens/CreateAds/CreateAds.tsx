@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AdsPhoto } from "@components/AdsPhoto/AdsPhoto";
 import { Container } from "@components/Container/Container";
 import { Toast } from "@components/Toast/Toast";
@@ -40,6 +40,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { AppNavigatorRoutesdProps, AppRoutes } from "@routes/app.routes";
 import { cleanCurrency, formatCurrency } from "@utils/validationValueProduct";
 import { ProductImageDTO } from "@dtos/ProductImageDTO";
+import { api } from "@services/api";
 
 type FormDataProps = {
   product_title: string;
@@ -177,15 +178,25 @@ export function CreateAds() {
       switchValue,
       value_product,
       selectedOption,
+      idProductExist: data.idProductExist,
     });
   }
+
+  useEffect(() => {
+    if (data.idProductExist) {
+      setImages(data.images);
+    }
+  }, [data.idProductExist]);
+
+  console.log(images);
 
   return (
     <VStack flex={1}>
       <Container
+        navigateTo={() => navigate("bottomTabs", { screen: "home" })}
         boxProps={{ paddingHorizontal: "$6" }}
         canGoBack
-        titleBack="Criar anúncio"
+        titleBack={data.editable ? "Editar anúncio" : "Criar anúncio"}
         scrollable
       >
         <Text fontFamily="$heading" color="$gray1" mb="$1">
@@ -197,32 +208,42 @@ export function CreateAds() {
         <HStack gap="$2" mt="$4" mb="$6">
           {images.length > 0 &&
             images.map((imageData) => (
-              <Box key={imageData.uri}>
+              <Box key={imageData.id}>
                 <Image
-                  source={{ uri: imageData.uri }}
+                  source={
+                    data.idProductExist
+                      ? {
+                          uri: `${api.defaults.baseURL}/images/${imageData.path}`,
+                        }
+                      : { uri: imageData.uri }
+                  }
                   alt="imagem do produto"
                   w="$24"
                   h="$24"
                   rounded="$lg"
                   resizeMode="cover"
                 />
-                <Pressable
-                  position="absolute"
-                  bg="$gray2"
-                  alignItems="center"
-                  justifyContent="center"
-                  rounded="$full"
-                  w="$6"
-                  h="$6"
-                  top={4}
-                  right={4}
-                  onPress={() => removeItem(imageData.uri)}
-                >
-                  <Icon as={X} color="$white" size="lg" />
-                </Pressable>
+                {!data.idProductExist && (
+                  <Pressable
+                    position="absolute"
+                    bg="$gray2"
+                    alignItems="center"
+                    justifyContent="center"
+                    rounded="$full"
+                    w="$6"
+                    h="$6"
+                    top={4}
+                    right={4}
+                    onPress={() => removeItem(imageData.uri)}
+                  >
+                    <Icon as={X} color="$white" size="lg" />
+                  </Pressable>
+                )}
               </Box>
             ))}
-          {images.length < 3 && <AdsPhoto handleAds={SelectedAds} />}
+          {images.length < 3 && !data.idProductExist && (
+            <AdsPhoto handleAds={SelectedAds} />
+          )}
         </HStack>
         <Text color="$gray1" fontFamily="$heading">
           Sobre o produto
