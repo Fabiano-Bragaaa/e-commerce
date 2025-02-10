@@ -33,6 +33,7 @@ export function Ads({ uri, title, price, userPhoto = false, isUsed }: Props) {
         paddingHorizontal="$2"
         pt="$1"
         top={1}
+        right={1}
         w={"100%"}
         justifyContent="space-between"
       >
@@ -50,7 +51,7 @@ export function Ads({ uri, title, price, userPhoto = false, isUsed }: Props) {
 
         <UsedOrNew isUsed={isUsed} />
       </HStack>
-      <Text color="$gray2" fontSize="$lg" mt="$3" mb="$1">
+      <Text color="$gray2" fontSize="$lg" mt="$3" mb="$1" numberOfLines={1}>
         {title}
       </Text>
       <HStack gap="$1" alignItems="center">

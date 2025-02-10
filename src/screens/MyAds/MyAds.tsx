@@ -1,5 +1,6 @@
 import { Ads } from "@components/Ads/Ads";
 import { Container } from "@components/Container/Container";
+import { Loading } from "@components/Loading/Loading";
 import { Toast } from "@components/Toast/Toast";
 import { MyProductsDTO } from "@dtos/MyProductsDTO";
 import { Spinner, useToast } from "@gluestack-ui/themed";
@@ -58,6 +59,7 @@ export function MyAads() {
     useCallback(() => {
       async function fetchMyProducts() {
         try {
+          setLoading(true);
           const { data } = await api.get("/users/products");
 
           setProduct(data);
@@ -81,12 +83,18 @@ export function MyAads() {
               />
             ),
           });
+        } finally {
+          setLoading(false);
         }
       }
 
       fetchMyProducts();
     }, [])
   );
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <VStack flex={1} paddingHorizontal="$4">
@@ -107,7 +115,7 @@ export function MyAads() {
           </Text>
           <Select flex={1}>
             <SelectTrigger variant="outline" size="md">
-              <SelectInput placeholder="Escolha uma opção" />
+              <SelectInput numberOfLines={1} placeholder="Escolha uma opção" />
               <SelectIcon mr="$3" as={ChevronDownIcon} />
             </SelectTrigger>
             <SelectPortal>
@@ -137,8 +145,16 @@ export function MyAads() {
               />
             </Pressable>
           )}
+          ListEmptyComponent={() => (
+            <Center flex={1}>
+              <Text color="$gray1" fontFamily="$heading">
+                Parece que não há produto cadastrado
+              </Text>
+            </Center>
+          )}
           showsVerticalScrollIndicator={false}
           numColumns={2}
+          contentContainerStyle={{ flexGrow: 1 }}
         />
       </Container>
     </VStack>

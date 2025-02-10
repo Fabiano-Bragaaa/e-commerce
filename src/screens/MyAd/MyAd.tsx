@@ -38,9 +38,13 @@ const { width, height } = Dimensions.get("window");
 
 export function MyAd() {
   const [product, setProduct] = useState<MyProductsDTO | null>(null);
+  const [visibleProduct, setVisibleProduct] = useState<boolean | undefined>(
+    product?.is_active
+  );
   const [images, setImages] = useState<ProductImageDTO[]>([]);
   const [paymentNames, setPaymentNames] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingAction, setLoadingAction] = useState<boolean>(false);
 
   const route = useRoute<RouteProp<AppRoutes, "myAd">>();
   const { id } = route.params;
@@ -67,22 +71,59 @@ export function MyAd() {
     }
   }
 
-  console.log(
-    "paymentNames ===>",
-    paymentNames,
-    "images ===>",
-    images,
-    "product_title ===>",
-    product?.name,
-    "selectedOption ===>",
-    product?.is_new,
-    "switchValue ===>",
-    product?.accept_trade,
-    "value_product? ===>",
-    product?.price,
-    "product?.description ===>",
-    product?.description
-  );
+  async function handleChangeVisible(id: string) {
+    try {
+      setVisibleProduct(!visibleProduct);
+      await api.patch(`/products/${id}`, {
+        is_active: visibleProduct,
+      });
+
+      console.log("visualição trocada com sucesso");
+    } catch {
+      console.log("erro ao trocar a visualização");
+    }
+  }
+
+  async function handleDeleteAd(id: string) {
+    try {
+      setLoadingAction(true);
+      await api.delete(`/products/${id}`);
+
+      navigate("bottomTabs", { screen: "myAds" });
+
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="success"
+            title={"Produto deletado com sucesso"}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Não foi possivel apagar o produto";
+
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    } finally {
+      setLoadingAction(false);
+    }
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -232,13 +273,18 @@ export function MyAd() {
                 <Box gap="$4" mt="$4">
                   <Button
                     Icon={<Icon as={Power} color="$white" size="lg" />}
-                    type="secondary"
-                    title="Desativar anúncio"
+                    type={visibleProduct ? "secondary" : "primary"}
+                    title={
+                      visibleProduct ? "Desativar anúncio" : "Reativar anúncio"
+                    }
+                    onPress={() => handleChangeVisible(id)}
                   />
                   <Button
                     Icon={<Icon as={Trash} color="$gray1" size="lg" />}
                     type="outiline"
                     title="Excluir anúncio"
+                    onPress={() => handleDeleteAd(id)}
+                    loading={loadingAction}
                   />
                 </Box>
               </Box>

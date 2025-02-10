@@ -21,6 +21,7 @@ export function HeaderHome() {
       selectedOption: "new_product",
       switchValue: false,
       value_product: "",
+      editable: false,
     });
   }
 
@@ -33,7 +34,7 @@ export function HeaderHome() {
         alt="Foto de perfil"
         sizeImage={60}
       />
-      <VStack gap="$1">
+      <VStack gap="$1" flex={1}>
         <Text color="gray1" fontSize="$lg" fontFamily="$body">
           Boas vindas,
         </Text>

@@ -61,12 +61,42 @@ export function PreviewAds() {
       switchValue,
       value_product,
       editable: true,
+      idProductExist,
     });
   }
 
   async function handleCreateProduct() {
     try {
       setLoadingData(true);
+
+      if (idProductExist) {
+        const { data } = await api.put(`/products/${idProductExist}`, {
+          name: product_title,
+          description: description_title,
+          is_new: selectedOption === "new_product" ? true : false,
+          price: Number(cleanCurrency(value_product)),
+          accept_trade: switchValue,
+          payment_methods: checkbox,
+        });
+
+        console.log("dados atualizados", data);
+
+        navigate('bottomTabs', {screen: 'myAds'})
+
+        return toast.show({
+          placement: "top",
+          render: ({ id }: { id: string }) => (
+            <Toast
+              id={id}
+              action="success"
+              title={"Produto atualizado com sucesso"}
+              onClose={() => toast.close(id)}
+            />
+          ),
+        });
+
+      }
+
       const { data } = await api.post("/products/", {
         name: product_title,
         description: description_title,
