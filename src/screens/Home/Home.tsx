@@ -8,16 +8,75 @@ import AdsSvg from "@assets/icons/ads.svg";
 import { ArrowRight } from "lucide-react-native";
 import { FlatList, Pressable } from "react-native";
 import { Input } from "@components/Input/Input";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Ads } from "@components/Ads/Ads";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesdProps } from "@routes/app.routes";
+import { api } from "@services/api";
+import { AllProductDTO } from "@dtos/ProductDTO";
+import { useAuth } from "@hooks/useAuth";
+import { Loading } from "@components/Loading/Loading";
+import { MyProductsDTO } from "@dtos/MyProductsDTO";
 
 export function Home() {
-  const [product, setProduct] = useState(["1", "2", "3", "4"]);
+  const [product, setProduct] = useState<AllProductDTO[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [myProducts, setMyProducts] = useState<number>();
 
+  const { user } = useAuth();
+  const {navigate} = useNavigation<AppNavigatorRoutesdProps>() 
   const { tokens } = gluestackUIConfig;
   const color = tokens.colors.blue;
+
+  function navigateToMyAds(){
+    navigate('bottomTabs', {screen: 'myAds'})
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      async function getProducts() {
+        try {
+          setLoading(true);
+          const { data: productsData } = await api.get<AllProductDTO[]>(
+            "/products"
+          );
+
+          const { data: myProductsData } = await api.get<AllProductDTO[]>(
+            "/users/products"
+          );
+
+          const myProductLenght = myProductsData.filter(
+            (item) => item.is_active
+          ).length;
+
+          setMyProducts(myProductLenght);
+
+          const myProduct = myProductsData.filter(
+            (item) => item.is_active
+          )
+
+          const formattedMyProducts = myProduct.map((item) => ({
+            ...item,
+            user: { avatar: user.avatar },
+          }));
+
+          const combinedProducts = [...productsData, ...formattedMyProducts];
+          setProduct(combinedProducts);
+        } catch (error) {
+          console.error("Erro ao buscar produtos:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      getProducts();
+    }, [])
+  );
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <VStack paddingHorizontal="$4" flex={1}>
       <Container>
@@ -38,13 +97,13 @@ export function Home() {
         <AdsSvg fill={color} width={30} height={30} />
         <VStack>
           <Text color="$gray2" fontSize="$2xl" fontFamily="$heading">
-            4
+            {myProducts}
           </Text>
           <Text color="$gray2" fontSize="$md">
-            anúncios ativos
+            {myProducts === 1 ? "anúncio ativo" : "anúncios ativos"}
           </Text>
         </VStack>
-        <Pressable>
+        <Pressable onPress={navigateToMyAds}>
           <HStack gap="$2" alignItems="center">
             <Text color="$blue" fontSize="$lg">
               Meus anúncios
@@ -61,16 +120,20 @@ export function Home() {
 
       <FlatList
         data={product}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.id}
         style={{ width: "100%" }}
-        renderItem={({}) => (
-          <Ads
-            isUsed
-            userPhoto
-            price={5990}
-            title="Tenis vermelho"
-            uri="https://preview.redd.it/so-musashi-is-a-big-strong-mf-any-more-examples-of-that-v0-5val7s82ajmb1.jpg?width=728&format=pjpg&auto=webp&s=00dd2b2890865d5bdce627b8b88c74463f938978"
-          />
+        renderItem={({ item }) => (
+          <>
+          
+            <Ads
+              isUsed={item.is_new}
+              userImage={`${api.defaults.baseURL}/images/${item.user.avatar}`}
+              userPhoto
+              price={item.price}
+              title={item.name}
+              uri={`${api.defaults.baseURL}/images/${item.product_images[0].path}`}
+            />
+          </>
         )}
         showsVerticalScrollIndicator={false}
         numColumns={2}

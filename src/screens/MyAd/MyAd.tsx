@@ -30,7 +30,7 @@ import { GeneratePaymentMethods } from "@utils/generatePaymentMethods";
 import { formatCurrency } from "@utils/validationValueProduct";
 import { ArrowLeft, PencilLine, Power, Trash } from "lucide-react-native";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Dimensions, ScrollView } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 
@@ -44,6 +44,7 @@ export function MyAd() {
   const [images, setImages] = useState<ProductImageDTO[]>([]);
   const [paymentNames, setPaymentNames] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingEditVisible, setLoadingEditVisible] = useState<boolean>(false);
   const [loadingAction, setLoadingAction] = useState<boolean>(false);
 
   const route = useRoute<RouteProp<AppRoutes, "myAd">>();
@@ -54,6 +55,8 @@ export function MyAd() {
   const { user } = useAuth();
 
   const toast = useToast();
+
+  console.log(product?.is_active);
 
   function navigateToEdit() {
     if (product) {
@@ -73,14 +76,49 @@ export function MyAd() {
 
   async function handleChangeVisible(id: string) {
     try {
-      setVisibleProduct(!visibleProduct);
+      setLoadingEditVisible(true);
+
+      const newVisibility = !visibleProduct;
+
       await api.patch(`/products/${id}`, {
-        is_active: visibleProduct,
+        is_active: newVisibility,
       });
 
-      console.log("visualição trocada com sucesso");
-    } catch {
-      console.log("erro ao trocar a visualização");
+      setVisibleProduct(newVisibility);
+
+      navigate("bottomTabs", { screen: "myAds" });
+
+      toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="success"
+            title={"Visibilidade do produto atualizado com sucesso"}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const title = isAppError
+        ? error.message
+        : "Não foi possivel atualizar a visibilidade do produto";
+
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    } finally {
+      setLoadingEditVisible(false);
     }
   }
 
@@ -166,6 +204,10 @@ export function MyAd() {
     }, [])
   );
 
+  useEffect(() => {
+    setVisibleProduct(product?.is_active);
+  }, [product]);
+
   console.log(paymentNames);
 
   return (
@@ -192,23 +234,58 @@ export function MyAd() {
               <Icon as={PencilLine} color="$gray2" size="lg" />
             </Pressable>
           </HStack>
-          <Box flex={1}>
-            <Carousel
-              loop={false}
-              width={width}
-              height={height * 0.3}
-              data={images}
-              renderItem={({ item }) => (
-                <Image
-                  w="$full"
-                  h="$full"
-                  resizeMode="cover"
-                  source={{
-                    uri: `${api.defaults.baseURL}/images/${item.path}`,
-                  }}
+          <Box flex={1} bg="$gray1">
+            {visibleProduct ? (
+              <Carousel
+                loop={false}
+                width={width}
+                height={height * 0.3}
+                data={images}
+                renderItem={({ item }) => (
+                  <Image
+                    w="$full"
+                    h="$full"
+                    resizeMode="cover"
+                    source={{
+                      uri: `${api.defaults.baseURL}/images/${item.path}`,
+                    }}
+                  />
+                )}
+              />
+            ) : (
+              <Box position="relative">
+                <Carousel
+                  loop={false}
+                  width={width}
+                  height={height * 0.3}
+                  data={images}
+                  renderItem={({ item }) => (
+                    <Image
+                      w="$full"
+                      h="$full"
+                      resizeMode="cover"
+                      source={{
+                        uri: `${api.defaults.baseURL}/images/${item.path}`,
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  right={0}
+                  bottom={0}
+                  bg="rgba(0, 0, 0, 0.5)"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <Text color="$white" fontSize="$lg" fontWeight="bold">
+                    ANÚNCIO DESATIVADO
+                  </Text>
+                </Box>
+              </Box>
+            )}
           </Box>
 
           <Container scrollable>
@@ -272,6 +349,7 @@ export function MyAd() {
                 <GeneratePaymentMethods paymentMethods={paymentNames} />
                 <Box gap="$4" mt="$4">
                   <Button
+                    loading={loadingEditVisible}
                     Icon={<Icon as={Power} color="$white" size="lg" />}
                     type={visibleProduct ? "secondary" : "primary"}
                     title={

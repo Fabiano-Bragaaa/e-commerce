@@ -81,6 +81,9 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
           data.token,
           data.refresh_token
         );
+
+        api.defaults.headers.Authorization = `Bearer ${data.token}`;
+
         setUser(data.user);
       }
     } catch (error) {

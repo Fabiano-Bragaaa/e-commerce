@@ -81,7 +81,7 @@ export function PreviewAds() {
 
         console.log("dados atualizados", data);
 
-        navigate('bottomTabs', {screen: 'myAds'})
+        navigate("bottomTabs", { screen: "myAds" });
 
         return toast.show({
           placement: "top",
@@ -94,7 +94,6 @@ export function PreviewAds() {
             />
           ),
         });
-
       }
 
       const { data } = await api.post("/products/", {
@@ -258,32 +257,30 @@ export function PreviewAds() {
             <GeneratePaymentMethods paymentMethods={checkbox} />
           </VStack>
         </Container>
-        <HStack
-          alignItems="center"
-          justifyContent="center"
-          gap={"$4"}
-          w="$full"
-          position="absolute"
-          bottom={1}
-          h={"12%"}
-          bg="$white"
-        >
-          <Button
-            onPress={handleEdit}
-            Icon={<Icon as={ArrowLeft} color="$gray2" size="lg" />}
-            title="Voltar e editar"
-            type="outiline"
-            sizeButton="small"
-          />
-          <Button
-            loading={loadingData}
-            onPress={handleCreateProduct}
-            Icon={<Icon as={Tag} color="$gray6" size="lg" />}
-            title="Publicar"
-            sizeButton="small"
-          />
-        </HStack>
       </ScrollView>
+      <HStack
+        alignItems="center"
+        justifyContent="center"
+        gap={"$4"}
+        w="$full"
+        h={"12%"}
+        bg="$white"
+      >
+        <Button
+          onPress={handleEdit}
+          Icon={<Icon as={ArrowLeft} color="$gray2" size="lg" />}
+          title="Voltar e editar"
+          type="outiline"
+          sizeButton="small"
+        />
+        <Button
+          loading={loadingData}
+          onPress={handleCreateProduct}
+          Icon={<Icon as={Tag} color="$gray6" size="lg" />}
+          title="Publicar"
+          sizeButton="small"
+        />
+      </HStack>
     </VStack>
   );
 }

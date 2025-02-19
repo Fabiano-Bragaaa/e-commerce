@@ -111,25 +111,8 @@ export function MyAads() {
         </HStack>
         <HStack alignItems="center" mb="$6">
           <Text flex={1} color="$gray2">
-            9 anúncios
+            {product.length} {product.length === 1 ? "anúncio" : "anúncios"}
           </Text>
-          <Select flex={1}>
-            <SelectTrigger variant="outline" size="md">
-              <SelectInput numberOfLines={1} placeholder="Escolha uma opção" />
-              <SelectIcon mr="$3" as={ChevronDownIcon} />
-            </SelectTrigger>
-            <SelectPortal>
-              <SelectBackdrop />
-              <SelectContent>
-                <SelectDragIndicatorWrapper>
-                  <SelectDragIndicator />
-                </SelectDragIndicatorWrapper>
-                <SelectItem label="Todos" value="all" />
-                <SelectItem label="Ativos" value="active" />
-                <SelectItem label="Inativos" value="inactive" />
-              </SelectContent>
-            </SelectPortal>
-          </Select>
         </HStack>
         <FlatList
           data={product}
@@ -142,6 +125,7 @@ export function MyAads() {
                 title={item.name}
                 price={item.price}
                 uri={`${api.defaults.baseURL}/images/${item.product_images[0].path}`}
+                visibled={item.is_active}
               />
             </Pressable>
           )}

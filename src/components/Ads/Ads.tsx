@@ -1,6 +1,6 @@
 import { UsedOrNew } from "@components/UsedOrNew/UsedOrNew";
 import { UserPhoto } from "@components/UserPhoto/UserPhoto";
-import { Box, Center, HStack, Image, Text, VStack } from "@gluestack-ui/themed";
+import { Box, HStack, Image, Text, VStack } from "@gluestack-ui/themed";
 import { useAuth } from "@hooks/useAuth";
 import { api } from "@services/api";
 import { formatCurrency } from "@utils/validationValueProduct";
@@ -11,22 +11,63 @@ type Props = {
   price: number;
   userPhoto?: boolean;
   isUsed: boolean;
+  visibled?: boolean;
+  userImage?: string;
 };
 
-export function Ads({ uri, title, price, userPhoto = false, isUsed }: Props) {
+export function Ads({
+  uri,
+  title,
+  price,
+  visibled = true,
+  userImage,
+  userPhoto = false,
+  isUsed,
+}: Props) {
   const { user } = useAuth();
   return (
     <VStack mr="$4" mb="$4">
-      <Image
-        source={{
-          uri,
-        }}
-        alt="ads"
-        h="$32"
-        w={170}
-        resizeMode="cover"
-        rounded="$lg"
-      />
+      {visibled ? (
+        <Image
+          source={{
+            uri,
+          }}
+          alt="ads"
+          h="$32"
+          w={170}
+          resizeMode="cover"
+          rounded="$lg"
+        />
+      ) : (
+        <Box position="relative">
+          <Image
+            source={{
+              uri,
+            }}
+            alt="ads"
+            h="$32"
+            w={170}
+            resizeMode="cover"
+            rounded="$lg"
+          />
+          <Box
+            position="absolute"
+            rounded="$lg"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            bg="rgba(0, 0, 0, 0.6)"
+            justifyContent="flex-end"
+            pb="$2"
+            pl="$2"
+          >
+            <Text color="$gray6" fontSize="$sm" fontWeight="bold">
+              ANÚNCIO DESATIVADO
+            </Text>
+          </Box>
+        </Box>
+      )}
 
       <HStack
         position="absolute"
@@ -40,7 +81,7 @@ export function Ads({ uri, title, price, userPhoto = false, isUsed }: Props) {
         {userPhoto ? (
           <UserPhoto
             source={{
-              uri: `${api.defaults.baseURL}/images/${user.avatar}`,
+              uri: userImage,
             }}
             sizeImage={40}
             isUser
@@ -51,14 +92,29 @@ export function Ads({ uri, title, price, userPhoto = false, isUsed }: Props) {
 
         <UsedOrNew isUsed={isUsed} />
       </HStack>
-      <Text color="$gray2" fontSize="$lg" mt="$3" mb="$1" numberOfLines={1}>
+      <Text
+        color={visibled ? "$gray1" : "$gray4"}
+        fontSize="$lg"
+        mt="$3"
+        mb="$1"
+        numberOfLines={1}
+      >
         {title}
       </Text>
       <HStack gap="$1" alignItems="center">
-        <Text color="$gray1" fontSize="$lg" fontFamily="$heading">
+        <Text
+          color={visibled ? "$gray1" : "$gray4"}
+          fontSize="$lg"
+          fontFamily="$heading"
+        >
           R$
         </Text>
-        <Text color="$gray1" fontSize="$2xl" fontFamily="$heading" mt={-5}>
+        <Text
+          color={visibled ? "$gray1" : "$gray4"}
+          fontSize="$2xl"
+          fontFamily="$heading"
+          mt={-5}
+        >
           {formatCurrency(price)}
         </Text>
       </HStack>
