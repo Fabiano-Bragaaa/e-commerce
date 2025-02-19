@@ -208,7 +208,7 @@ export function CreateAds() {
         <HStack gap="$2" mt="$4" mb="$6">
           {images.length > 0 &&
             images.map((imageData) => (
-              <Box key={imageData.name}>
+              <Box key={imageData.type}>
                 <Image
                   source={
                     data.idProductExist
