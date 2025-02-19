@@ -34,12 +34,14 @@ import { useCallback, useEffect, useState } from "react";
 import { Dimensions, ScrollView } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 const { width, height } = Dimensions.get("window");
 
 export function MyAd() {
   const [product, setProduct] = useState<MyProductsDTO | null>(null);
   const [visibleProduct, setVisibleProduct] = useState<boolean | undefined>(
-    product?.is_active
+    true
   );
   const [images, setImages] = useState<ProductImageDTO[]>([]);
   const [paymentNames, setPaymentNames] = useState<string[]>([]);
@@ -48,7 +50,7 @@ export function MyAd() {
   const [loadingAction, setLoadingAction] = useState<boolean>(false);
 
   const route = useRoute<RouteProp<AppRoutes, "myAd">>();
-  const { id } = route.params;
+  const { id, isHome } = route.params;
 
   const { navigate, goBack } = useNavigation<AppNavigatorRoutesdProps>();
 
@@ -213,47 +215,34 @@ export function MyAd() {
   return (
     <VStack flex={1}>
       {product && !loading ? (
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingBottom: height * 0.12,
-          }}
-          showsVerticalScrollIndicator={false}
-        >
-          <HStack
-            h="8%"
-            paddingHorizontal="$4"
-            mt="$6"
-            alignItems="center"
-            justifyContent="space-between"
+        <Box flex={1}>
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingBottom: height * 0.12,
+            }}
+            showsVerticalScrollIndicator={false}
           >
-            <Pressable onPress={goBack}>
-              <Icon as={ArrowLeft} color="$gray2" size="xl" />
-            </Pressable>
-            <Pressable onPress={navigateToEdit}>
-              <Icon as={PencilLine} color="$gray2" size="lg" />
-            </Pressable>
-          </HStack>
-          <Box flex={1} bg="$gray1">
-            {visibleProduct ? (
-              <Carousel
-                loop={false}
-                width={width}
-                height={height * 0.3}
-                data={images}
-                renderItem={({ item }) => (
-                  <Image
-                    w="$full"
-                    h="$full"
-                    resizeMode="cover"
-                    source={{
-                      uri: `${api.defaults.baseURL}/images/${item.path}`,
-                    }}
-                  />
-                )}
-              />
-            ) : (
-              <Box position="relative">
+            <HStack
+              h="8%"
+              paddingHorizontal="$4"
+              mt="$6"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Pressable onPress={goBack}>
+                <Icon as={ArrowLeft} color="$gray2" size="xl" />
+              </Pressable>
+              {!isHome ? (
+                <Pressable onPress={navigateToEdit}>
+                  <Icon as={PencilLine} color="$gray2" size="lg" />
+                </Pressable>
+              ) : (
+                <Box />
+              )}
+            </HStack>
+            <Box flex={1} bg="$gray6">
+              {isHome && (
                 <Carousel
                   loop={false}
                   width={width}
@@ -270,105 +259,183 @@ export function MyAd() {
                     />
                   )}
                 />
-                <Box
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  right={0}
-                  bottom={0}
-                  bg="rgba(0, 0, 0, 0.5)"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Text color="$white" fontSize="$lg" fontWeight="bold">
-                    ANÚNCIO DESATIVADO
-                  </Text>
-                </Box>
-              </Box>
-            )}
-          </Box>
+              )}
 
-          <Container scrollable>
-            <VStack paddingHorizontal="$4">
-              <HStack alignItems="center" gap="$2">
-                <UserPhoto
-                  source={{
-                    uri: `${api.defaults.baseURL}/images/${user.avatar}`,
-                  }}
-                  sizeImage={40}
-                />
-                <Text color="$gray1" fontFamily="$heading">
-                  {user.name}
-                </Text>
-              </HStack>
-              <UsedOrNew isViewAds isUsed={product.is_new} my="$4" />
-              <HStack alignItems="center" mb="$4">
-                <Text
-                  color="$gray1"
-                  fontSize="$2xl"
-                  fontFamily="$heading"
-                  flex={1}
-                  numberOfLines={1}
-                >
-                  {product.name}
-                </Text>
-                <HStack gap="$1" alignItems="center">
-                  <Text color="$blue" fontSize="$lg" fontFamily="$heading">
-                    R$
-                  </Text>
-                  <Text
-                    color="$blue"
-                    fontSize="$2xl"
-                    fontFamily="$heading"
-                    mt={-5}
-                  >
-                    {formatCurrency(product.price)}
+              {!isHome &&
+                (visibleProduct ? (
+                  <Carousel
+                    loop={false}
+                    width={width}
+                    height={height * 0.3}
+                    data={images}
+                    renderItem={({ item }) => (
+                      <Image
+                        w="$full"
+                        h="$full"
+                        resizeMode="cover"
+                        source={{
+                          uri: `${api.defaults.baseURL}/images/${item.path}`,
+                        }}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Box position="relative">
+                    <Carousel
+                      loop={false}
+                      width={width}
+                      height={height * 0.3}
+                      data={images}
+                      renderItem={({ item }) => (
+                        <Image
+                          w="$full"
+                          h="$full"
+                          resizeMode="cover"
+                          source={{
+                            uri: `${api.defaults.baseURL}/images/${item.path}`,
+                          }}
+                        />
+                      )}
+                    />
+                    <Box
+                      position="absolute"
+                      top={0}
+                      left={0}
+                      right={0}
+                      bottom={0}
+                      bg="rgba(0, 0, 0, 0.5)"
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      <Text color="$white" fontSize="$lg" fontWeight="bold">
+                        ANÚNCIO DESATIVADO
+                      </Text>
+                    </Box>
+                  </Box>
+                ))}
+            </Box>
+
+            <Container scrollable>
+              <VStack paddingHorizontal="$4">
+                <HStack alignItems="center" gap="$2">
+                  <UserPhoto
+                    source={{
+                      uri: `${api.defaults.baseURL}/images/${user.avatar}`,
+                    }}
+                    sizeImage={40}
+                  />
+                  <Text color="$gray1" fontFamily="$heading">
+                    {user.name}
                   </Text>
                 </HStack>
-              </HStack>
-              <Text fontSize="$lg" color="$gray2" mb="$4">
-                {product.description}
-              </Text>
-              <HStack alignItems="center" gap="$2" mb="$4">
-                <Text fontSize="$lg" color="$gray1" fontFamily="$heading">
-                  Aceita troca?
+                <UsedOrNew isViewAds isUsed={product.is_new} my="$4" />
+                <HStack alignItems="center" mb="$4">
+                  <Text
+                    color="$gray1"
+                    fontSize="$2xl"
+                    fontFamily="$heading"
+                    flex={1}
+                    numberOfLines={1}
+                  >
+                    {product.name}
+                  </Text>
+                  <HStack gap="$1" alignItems="center">
+                    <Text color="$blue" fontSize="$lg" fontFamily="$heading">
+                      R$
+                    </Text>
+                    <Text
+                      color="$blue"
+                      fontSize="$2xl"
+                      fontFamily="$heading"
+                      mt={-5}
+                    >
+                      {formatCurrency(product.price)}
+                    </Text>
+                  </HStack>
+                </HStack>
+                <Text fontSize="$lg" color="$gray2" mb="$4">
+                  {product.description}
                 </Text>
-                <Text fontSize="$lg" color="$gray1" fontFamily="$body">
-                  {product.accept_trade ? "Sim" : "Não"}
-                </Text>
-              </HStack>
-              <Box>
-                <Text
-                  fontSize="$lg"
-                  color="$gray1"
-                  fontFamily="$heading"
-                  mb="$2"
-                >
-                  Meios de pagamento:
-                </Text>
-                <GeneratePaymentMethods paymentMethods={paymentNames} />
-                <Box gap="$4" mt="$4">
-                  <Button
-                    loading={loadingEditVisible}
-                    Icon={<Icon as={Power} color="$white" size="lg" />}
-                    type={visibleProduct ? "secondary" : "primary"}
-                    title={
-                      visibleProduct ? "Desativar anúncio" : "Reativar anúncio"
-                    }
-                    onPress={() => handleChangeVisible(id)}
-                  />
-                  <Button
-                    Icon={<Icon as={Trash} color="$gray1" size="lg" />}
-                    type="outiline"
-                    title="Excluir anúncio"
-                    onPress={() => handleDeleteAd(id)}
-                    loading={loadingAction}
-                  />
+                <HStack alignItems="center" gap="$2" mb="$4">
+                  <Text fontSize="$lg" color="$gray1" fontFamily="$heading">
+                    Aceita troca?
+                  </Text>
+                  <Text fontSize="$lg" color="$gray1" fontFamily="$body">
+                    {product.accept_trade ? "Sim" : "Não"}
+                  </Text>
+                </HStack>
+                <Box>
+                  <Text
+                    fontSize="$lg"
+                    color="$gray1"
+                    fontFamily="$heading"
+                    mb="$2"
+                  >
+                    Meios de pagamento:
+                  </Text>
+                  <GeneratePaymentMethods paymentMethods={paymentNames} />
+                  {!isHome && (
+                    <Box gap="$4" mt="$4">
+                      <Button
+                        loading={loadingEditVisible}
+                        Icon={<Icon as={Power} color="$white" size="lg" />}
+                        type={visibleProduct ? "secondary" : "primary"}
+                        title={
+                          visibleProduct
+                            ? "Desativar anúncio"
+                            : "Reativar anúncio"
+                        }
+                        onPress={() => handleChangeVisible(id)}
+                      />
+                      <Button
+                        Icon={<Icon as={Trash} color="$gray1" size="lg" />}
+                        type="outiline"
+                        title="Excluir anúncio"
+                        onPress={() => handleDeleteAd(id)}
+                        loading={loadingAction}
+                      />
+                    </Box>
+                  )}
                 </Box>
-              </Box>
-            </VStack>
-          </Container>
-        </ScrollView>
+              </VStack>
+            </Container>
+          </ScrollView>
+          {isHome && (
+            <HStack
+              h={"12%"}
+              bgColor="$white"
+              paddingHorizontal="$4"
+              gap="$4"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <HStack gap="$1" alignItems="center">
+                <Text color="$blue" fontSize="$lg" fontFamily="$heading">
+                  R$
+                </Text>
+                <Text
+                  color="$blue"
+                  fontSize="$2xl"
+                  fontFamily="$heading"
+                  mt={-5}
+                >
+                  {formatCurrency(product.price)}
+                </Text>
+              </HStack>
+              <Button
+                title="Entrar em contato"
+                sizeButton="small"
+                Icon={
+                  <MaterialCommunityIcons
+                    name="whatsapp"
+                    color={"#fff"}
+                    size={20}
+                  />
+                }
+              />
+            </HStack>
+          )}
+        </Box>
       ) : (
         <Loading />
       )}

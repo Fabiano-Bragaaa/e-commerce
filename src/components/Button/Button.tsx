@@ -51,6 +51,7 @@ export function Button({
           color={type === "outiline" ? "$gray1" : "$white"}
           fontFamily="$heading"
           fontSize="$lg"
+          numberOfLines={1}
         >
           {title}
         </ButtonText>

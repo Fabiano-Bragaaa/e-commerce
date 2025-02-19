@@ -37,6 +37,7 @@ export type AppRoutes = {
   };
   myAd: {
     id: string;
+    isHome: boolean;
   };
 };
 

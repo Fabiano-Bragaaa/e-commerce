@@ -52,7 +52,7 @@ export function MyAads() {
   }
 
   function handleNavigateToAds(id: string) {
-    navigate("myAd", { id });
+    navigate("myAd", { id, isHome: false });
   }
 
   useFocusEffect(

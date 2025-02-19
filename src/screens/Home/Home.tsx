@@ -24,12 +24,16 @@ export function Home() {
   const [myProducts, setMyProducts] = useState<number>();
 
   const { user } = useAuth();
-  const {navigate} = useNavigation<AppNavigatorRoutesdProps>() 
+  const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
   const { tokens } = gluestackUIConfig;
   const color = tokens.colors.blue;
 
-  function navigateToMyAds(){
-    navigate('bottomTabs', {screen: 'myAds'})
+  function navigateToMyAds() {
+    navigate("bottomTabs", { screen: "myAds" });
+  }
+
+  function navigateToAds(id: string) {
+    navigate("myAd", { id, isHome: true });
   }
 
   useFocusEffect(
@@ -51,9 +55,7 @@ export function Home() {
 
           setMyProducts(myProductLenght);
 
-          const myProduct = myProductsData.filter(
-            (item) => item.is_active
-          )
+          const myProduct = myProductsData.filter((item) => item.is_active);
 
           const formattedMyProducts = myProduct.map((item) => ({
             ...item,
@@ -124,15 +126,16 @@ export function Home() {
         style={{ width: "100%" }}
         renderItem={({ item }) => (
           <>
-          
-            <Ads
-              isUsed={item.is_new}
-              userImage={`${api.defaults.baseURL}/images/${item.user.avatar}`}
-              userPhoto
-              price={item.price}
-              title={item.name}
-              uri={`${api.defaults.baseURL}/images/${item.product_images[0].path}`}
-            />
+            <Pressable onPress={() => navigateToAds(item.id)}>
+              <Ads
+                isUsed={item.is_new}
+                userImage={`${api.defaults.baseURL}/images/${item.user.avatar}`}
+                userPhoto
+                price={item.price}
+                title={item.name}
+                uri={`${api.defaults.baseURL}/images/${item.product_images[0].path}`}
+              />
+            </Pressable>
           </>
         )}
         showsVerticalScrollIndicator={false}
