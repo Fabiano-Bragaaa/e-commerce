@@ -1,9 +1,13 @@
-import { Center, Text } from "@gluestack-ui/themed";
+import { Loading } from "@components/Loading/Loading";
+import { useAuth } from "@hooks/useAuth";
+import { useEffect } from "react";
 
 export function SignOut() {
-  return (
-    <Center>
-      <Text>SignOut</Text>
-    </Center>
-  );
+  const { signOut } = useAuth();
+
+  useEffect(() => {
+    signOut();
+  }, []);
+
+  return <Loading />;
 }

@@ -1,12 +1,21 @@
 import { Container } from "@components/Container/Container";
 import { HeaderHome } from "@components/HeaderHome/HeaderHome";
-import { HStack, Icon, Text, VStack } from "@gluestack-ui/themed";
+import {
+  Box,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+  Pressable,
+  Switch,
+  useToast,
+} from "@gluestack-ui/themed";
 
 import { gluestackUIConfig } from "../../../config/gluestack-ui.config";
 
 import AdsSvg from "@assets/icons/ads.svg";
-import { ArrowRight } from "lucide-react-native";
-import { FlatList, Pressable } from "react-native";
+import { ArrowRight, X } from "lucide-react-native";
+import { FlatList, Modal, StatusBar } from "react-native";
 import { Input } from "@components/Input/Input";
 import { useCallback, useState } from "react";
 import { Ads } from "@components/Ads/Ads";
@@ -16,12 +25,27 @@ import { api } from "@services/api";
 import { AllProductDTO } from "@dtos/ProductDTO";
 import { useAuth } from "@hooks/useAuth";
 import { Loading } from "@components/Loading/Loading";
-import { MyProductsDTO } from "@dtos/MyProductsDTO";
+import { Checkbox } from "@components/Checkbox/Checkbox";
+import { Button } from "@components/Button/Button";
+import { CardSelect } from "@components/CardSelect/CardSelect";
+import { Center } from "@gluestack-ui/themed";
+import { Toast } from "@components/Toast/Toast";
 
 export function Home() {
   const [product, setProduct] = useState<AllProductDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [myProducts, setMyProducts] = useState<number>();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [switchValue, setSwitchValue] = useState<boolean>(false);
+  const [selected, setSelected] = useState<"new" | "used" | null>(null);
+  const [checkbox, setCheckbox] = useState<string[]>([]);
+  const [filterLoading, setFilterLoading] = useState<boolean>(false);
+  const [searchProduct, setSearchProduct] = useState<string>();
+
+  const theme = gluestackUIConfig.tokens;
+  const colors = theme.colors;
+
+  const toast = useToast();
 
   const { user } = useAuth();
   const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
@@ -34,6 +58,62 @@ export function Home() {
 
   function navigateToAds(id: string) {
     navigate("myAd", { id, isHome: true });
+  }
+
+  function handleResetFilter() {
+    setCheckbox([]);
+    setSelected(null);
+    setSwitchValue(false);
+  }
+
+  async function handleFilter() {
+    try {
+      if (checkbox.length === 0) {
+        return toast.show({
+          placement: "top",
+          render: ({ id }) => (
+            <Toast
+              id={id}
+              action="error"
+              title={"Escolha pelo menos um meio de pagamento."}
+              onClose={() => toast.close(id)}
+            />
+          ),
+        });
+      }
+
+      setFilterLoading(true);
+      const { data } = await api.get(
+        `/products/?is_new=${
+          selected === "new" ? true : false
+        }&accept_trade=${switchValue}&payment_methods=${checkbox.join(
+          "&payment_methods="
+        )}`
+      );
+
+      setProduct(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+    } finally {
+      setFilterLoading(false);
+      setModalVisible(false);
+      handleResetFilter();
+    }
+  }
+
+  async function handleFetchProduct() {
+  
+      const checkboxsFull = ["pix", "card", "boleto", "cash", "deposit"];
+      const { data } = await api.get(
+        `/products/?payment_methods=${checkboxsFull.join(
+          "&payment_methods="
+        )}&query=${searchProduct}`
+      );
+
+      setProduct(data);
+      setSearchProduct("");
+    
   }
 
   useFocusEffect(
@@ -118,7 +198,14 @@ export function Home() {
         Compre produtos variados
       </Text>
 
-      <Input placeholder="Buscar anúncio" isSearch />
+      <Input
+        placeholder="Buscar anúncio"
+        value={searchProduct}
+        onChangeText={setSearchProduct}
+        searchProduct={handleFetchProduct}
+        isSearch
+        openModal={() => setModalVisible(true)}
+      />
 
       <FlatList
         data={product}
@@ -140,7 +227,89 @@ export function Home() {
         )}
         showsVerticalScrollIndicator={false}
         numColumns={2}
+        ListEmptyComponent={() => (
+          <Center flex={1}>
+            <Text color="$gray1" fontFamily="$heading">
+              Sem produtos.
+            </Text>
+            <Text>Vish, parece que não há produtos.</Text>
+          </Center>
+        )}
       />
+      <Modal transparent visible={modalVisible} animationType="slide">
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="rgba(0,0,0,0.3)"
+          translucent
+        />
+        <Pressable style={{ flex: 1 }} onPress={() => setModalVisible(false)}>
+          <Box flex={1} bg="rgba(0,0,0,0.3)" />
+        </Pressable>
+
+        <Box
+          bg="$white"
+          h="70%"
+          borderTopLeftRadius={20}
+          borderTopRightRadius={20}
+          p="$4"
+          position="absolute"
+          bottom={0}
+          left={0}
+          right={0}
+        >
+          <HStack>
+            <Text fontFamily="$heading" fontSize={22} color="$black" flex={1}>
+              Filtrar anúncios
+            </Text>
+            <Pressable onPress={() => setModalVisible(false)}>
+              <Icon as={X} color="$gray3" size="lg" />
+            </Pressable>
+          </HStack>
+          <VStack mt="$3" gap="$3">
+            <Text color="$gray2" fontFamily="$heading" fontSize="$lg">
+              Condição
+            </Text>
+            <CardSelect selected={selected} setSelected={setSelected} />
+          </VStack>
+          <VStack mt="$4" gap="$1">
+            <Text color="$gray2" fontFamily="$heading" fontSize="$lg">
+              Aceita troca?
+            </Text>
+            <Switch
+              value={switchValue}
+              onToggle={setSwitchValue}
+              size="lg"
+              trackColor={{ false: colors.gray5, true: colors.blue }}
+              thumbColor={colors.white}
+              alignSelf="flex-start"
+            />
+          </VStack>
+          <VStack gap="$1" mb="$4">
+            <Text color="$gray2" fontFamily="$heading" fontSize="$lg">
+              Meios de pagamento aceitos
+            </Text>
+            <Checkbox
+              value={checkbox}
+              setValues={(key: string[]) => setCheckbox(key)}
+            />
+          </VStack>
+          <HStack alignItems="center" justifyContent="center" gap={"$4"}>
+            <Button
+              onPress={handleResetFilter}
+              title="Resetar filtros"
+              type="outiline"
+              sizeButton="fine"
+            />
+            <Button
+              onPress={handleFilter}
+              type="secondary"
+              title="Aplicar filtros"
+              sizeButton="fine"
+              loading={filterLoading}
+            />
+          </HStack>
+        </Box>
+      </Modal>
     </VStack>
   );
 }

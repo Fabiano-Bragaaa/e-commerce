@@ -104,13 +104,6 @@ export function Ads({
       <HStack gap="$1" alignItems="center">
         <Text
           color={visibled ? "$gray1" : "$gray4"}
-          fontSize="$lg"
-          fontFamily="$heading"
-        >
-          R$
-        </Text>
-        <Text
-          color={visibled ? "$gray1" : "$gray4"}
           fontSize="$2xl"
           fontFamily="$heading"
           mt={-5}

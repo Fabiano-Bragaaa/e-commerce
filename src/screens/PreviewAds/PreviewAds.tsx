@@ -31,7 +31,6 @@ const { width, height } = Dimensions.get("window");
 
 export function PreviewAds() {
   const [loadingData, setLoadingData] = useState<boolean>(false);
-  const [imagesData, setImagesData] = useState<ProductImageDTO>();
 
   const route = useRoute<RouteProp<AppRoutes, "previewAds">>();
   const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
@@ -226,19 +225,10 @@ export function PreviewAds() {
               >
                 {product_title}
               </Text>
-              <HStack gap="$1" alignItems="center">
-                <Text color="$blue" fontSize="$lg" fontFamily="$heading">
-                  R$
-                </Text>
-                <Text
-                  color="$blue"
-                  fontSize="$2xl"
-                  fontFamily="$heading"
-                  mt={-5}
-                >
-                  {formatCurrency(value_product || "")}
-                </Text>
-              </HStack>
+
+              <Text color="$blue" fontSize="$2xl" fontFamily="$heading" mt={-5}>
+                {formatCurrency(value_product || "")}
+              </Text>
             </HStack>
             <Text fontSize="$lg" color="$gray2" mb="$4">
               {description_title}

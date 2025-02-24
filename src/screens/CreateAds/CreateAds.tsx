@@ -26,7 +26,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 
-import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 
 import { X } from "lucide-react-native";
@@ -57,7 +56,7 @@ const productSchema = yup.object({
 export function CreateAds() {
   const theme = gluestackUIConfig.tokens;
   const color = theme.colors;
-  const { navigate } = useNavigation<AppNavigatorRoutesdProps>();
+  const { navigate, goBack } = useNavigation<AppNavigatorRoutesdProps>();
 
   const route = useRoute<RouteProp<AppRoutes, "createAds">>();
 
@@ -207,8 +206,8 @@ export function CreateAds() {
         </Text>
         <HStack gap="$2" mt="$4" mb="$6">
           {images.length > 0 &&
-            images.map((imageData) => (
-              <Box key={imageData.type}>
+            images.map((imageData, key) => (
+              <Box key={key}>
                 <Image
                   source={
                     data.idProductExist
@@ -349,7 +348,7 @@ export function CreateAds() {
           p="$4"
           mx="-$6"
         >
-          <Button title="Cancelar" type="outiline" sizeButton="fine" />
+          <Button title="Cancelar" type="outiline" sizeButton="fine" onPress={goBack} />
           <Button
             title="Avançar"
             type="secondary"

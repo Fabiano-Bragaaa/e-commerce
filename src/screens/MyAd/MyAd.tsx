@@ -31,7 +31,7 @@ import { formatCurrency } from "@utils/validationValueProduct";
 import { ArrowLeft, PencilLine, Power, Trash } from "lucide-react-native";
 
 import { useCallback, useEffect, useState } from "react";
-import { Dimensions, ScrollView } from "react-native";
+import { Dimensions, Linking, ScrollView } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -46,6 +46,7 @@ export function MyAd() {
   const [images, setImages] = useState<ProductImageDTO[]>([]);
   const [paymentNames, setPaymentNames] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingPhone, setLoadingPhone] = useState<boolean>(false);
   const [loadingEditVisible, setLoadingEditVisible] = useState<boolean>(false);
   const [loadingAction, setLoadingAction] = useState<boolean>(false);
 
@@ -165,12 +166,43 @@ export function MyAd() {
     }
   }
 
+  async function handleOpenWhatsapp() {
+    try {
+      setLoadingPhone(true);
+      const url = `https://wa.me/+55${product?.user.tel}`;
+
+      const suported = await Linking.canOpenURL(url);
+
+      if (suported) {
+        await Linking.openURL(url);
+      }
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      return toast.show({
+        placement: "top",
+        render: ({ id }) => (
+          <Toast
+            id={id}
+            action="error"
+            title={"Erro ao abrir o Whatsapp"}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      });
+    } finally {
+      setLoadingPhone(false);
+    }
+  }
+
   useFocusEffect(
     useCallback(() => {
       async function fetchMyProduct() {
         try {
           setLoading(true);
           const { data } = await api.get(`/products/${id}`);
+
+          console.log(data);
 
           setImages(data.product_images);
           setProduct(data);
@@ -320,12 +352,12 @@ export function MyAd() {
                 <HStack alignItems="center" gap="$2">
                   <UserPhoto
                     source={{
-                      uri: `${api.defaults.baseURL}/images/${user.avatar}`,
+                      uri: `${api.defaults.baseURL}/images/${product.user.avatar}`,
                     }}
                     sizeImage={40}
                   />
                   <Text color="$gray1" fontFamily="$heading">
-                    {user.name}
+                    {product.user.name}
                   </Text>
                 </HStack>
                 <UsedOrNew isViewAds isUsed={product.is_new} my="$4" />
@@ -423,8 +455,10 @@ export function MyAd() {
                 </Text>
               </HStack>
               <Button
+                onPress={handleOpenWhatsapp}
                 title="Entrar em contato"
                 sizeButton="small"
+                loading={loadingPhone}
                 Icon={
                   <MaterialCommunityIcons
                     name="whatsapp"

@@ -18,6 +18,7 @@ export type AuthContextDataProps = {
   setUser: (user: UserDTO) => void;
   signIn: (email: string, password: string) => Promise<void>;
   loadingStorageUser: boolean;
+  signOut: () => void;
 };
 
 type AuthContextProviderProps = {
@@ -124,7 +125,9 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, signIn, setUser, loadingStorageUser }}>
+    <AuthContext.Provider
+      value={{ user, signIn, setUser, loadingStorageUser, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );

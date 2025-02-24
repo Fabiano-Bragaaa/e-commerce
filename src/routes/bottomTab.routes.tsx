@@ -5,7 +5,6 @@ import {
 
 import { Home } from "@screens/Home/Home";
 import { MyAads } from "@screens/MyAds/MyAds";
-import { SignOut } from "@screens/SignOut/SignOut";
 
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { Platform } from "react-native";
@@ -13,11 +12,14 @@ import { Platform } from "react-native";
 import HomeSvg from "@assets/icons/home.svg";
 import AdsSvg from "@assets/icons/ads.svg";
 import GetOut from "@assets/icons/getout.svg";
+import { TouchableOpacity } from "react-native";
+import { useAuth } from "@hooks/useAuth";
+import { SignOut } from "@screens/SignOut/SignOut";
 
 export type BottomTabParamList = {
   home: undefined;
   myAds: undefined;
-  singOut: undefined;
+  signOut: undefined;
 };
 
 export type AppRoutesProps = BottomTabNavigationProp<BottomTabParamList>;
@@ -27,6 +29,8 @@ const { Navigator, Screen } = createBottomTabNavigator<BottomTabParamList>();
 export function BottomTabRoutes() {
   const { tokens } = gluestackUIConfig;
   const iconSize = tokens.space["8"];
+
+  const { signOut } = useAuth();
 
   return (
     <Navigator
@@ -63,7 +67,7 @@ export function BottomTabRoutes() {
         }}
       />
       <Screen
-        name="singOut"
+        name="signOut"
         component={SignOut}
         options={{
           tabBarIcon: () => <GetOut width={iconSize} height={iconSize} />,

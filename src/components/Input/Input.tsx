@@ -18,9 +18,11 @@ type InputProps = ComponentProps<typeof InputField> & {
   isSearch?: boolean;
   toggleSecurity?: boolean;
   onToggleSecurity?: () => void;
+  openModal?: () => void;
   errorMessage?: string | null;
   isInvalid?: boolean;
   boxProps?: ComponentProps<typeof GSInput>;
+  searchProduct?: () => void;
 };
 
 export function Input({
@@ -29,6 +31,8 @@ export function Input({
   isMoney = false,
   toggleSecurity = false,
   onToggleSecurity,
+  openModal,
+  searchProduct,
   boxProps,
   errorMessage = null,
   isInvalid = false,
@@ -78,11 +82,11 @@ export function Input({
         )}
         {isSearch && (
           <HStack gap="$2">
-            <Pressable onPress={() => {}}>
+            <Pressable onPress={searchProduct}>
               <Icon as={Search} color="$gray1" size="lg" />
             </Pressable>
             <Text color="$gray4">|</Text>
-            <Pressable onPress={() => {}}>
+            <Pressable onPress={openModal}>
               <Icon as={SlidersVertical} color="$gray1" size="lg" />
             </Pressable>
           </HStack>
