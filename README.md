@@ -1,6 +1,8 @@
 # E-commerce App 📱🛒  
 
-![Demonstração do app](./assets/simulator.gif)
+<p align="center">
+  <img src="./assets/simulator.gif" alt="Demonstração do app" width="300"/>
+</p>
 
 ## Sobre o projeto  
 Este é um aplicativo estilo OLX onde os usuários podem cadastrar, editar e vender produtos, além de entrar em contato com vendedores via WhatsApp.
